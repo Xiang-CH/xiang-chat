@@ -1,3 +1,6 @@
+import {
+  ClerkProvider,
+} from '@clerk/nextjs'
 import "~/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
@@ -20,17 +23,19 @@ export default async function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
 
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
-      <body className="flex min-h-screen">
-       <SidebarProvider className="min-w-screen min-h-screen">
-        <AppSidebar />
-        <main className="w-full h-full relative flex flex-col">
-          <SidebarTrigger />
-          {children}
-        </main>
-      </SidebarProvider>
-      <Toaster />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={`${GeistSans.variable}`}>
+        <body className="flex min-h-screen">
+        <SidebarProvider className="min-w-screen min-h-screen">
+          <AppSidebar />
+          <main className="w-full h-full relative flex flex-col">
+            <SidebarTrigger />
+            {children}
+          </main>
+        </SidebarProvider>
+        <Toaster />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

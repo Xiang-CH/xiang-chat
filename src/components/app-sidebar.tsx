@@ -5,7 +5,14 @@ import {
     SidebarGroup,
     SidebarHeader,
 } from "~/components/ui/sidebar"
+import {
+    SignInButton,
+    SignedIn,
+    SignedOut,
+    UserButton
+  } from '@clerk/nextjs'
 import { db } from "~/server/db";
+import { Button } from "./ui/button";
   
 export async function AppSidebar(): Promise<JSX.Element> {
     const conversations = await db.query.posts.findMany();
@@ -19,7 +26,16 @@ export async function AppSidebar(): Promise<JSX.Element> {
                 ))}
             </SidebarGroup>
         </SidebarContent>
-        <SidebarFooter />
+        <SidebarFooter className="py-4 border-t-[1px] h-16 flex items-center justify-center">
+            <SignedIn>
+                <UserButton />
+            </SignedIn>
+            <SignedOut>
+                <SignInButton mode="modal">
+                    <Button className="h-full w-40">Sign in</Button>
+                </SignInButton>
+            </SignedOut>
+        </SidebarFooter>
         </Sidebar>
     )
 }

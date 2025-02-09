@@ -8,11 +8,15 @@ import { ModelSelector} from "~/components/ui/model-selector";
 import { MODELS, type Model } from "~/lib/models";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useAuth } from "@clerk/clerk-react";
+import { is } from "drizzle-orm";
 
 function ChatInputArea({ className }: { className?: string }) {
   const [value, setValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [model, setModel] = useState<Model>(MODELS[0]);
+
+  const { isSignedIn } = useAuth();
 
   const handleSubmit = () => {
     setIsLoading(true);
@@ -33,10 +37,10 @@ function ChatInputArea({ className }: { className?: string }) {
           loading={isLoading}
           onStop={() => setIsLoading(false)}
         >
-          <ChatInputTextArea placeholder="Type a message..." />
+          <ChatInputTextArea placeholder="Type a message..." disabled={!isSignedIn} />
           <div className="flex w-full items-center justify-between">
             <div>
-                <ModelSelector value={model} onChange={setModel}/>
+                <ModelSelector value={model} onChange={setModel} disabled={!isSignedIn}/>
             </div>
             <ChatInputSubmit />
           </div>
