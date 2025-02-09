@@ -1,5 +1,5 @@
 
-export default function chatPage({readonly}: {readonly: Boolean}) {
+export default function chatPage() {
     return (
         <div>
             <h1>Chat</h1>
