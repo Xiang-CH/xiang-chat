@@ -4,7 +4,8 @@
 import { sql } from "drizzle-orm";
 import {
   index,
-  integer,
+  uuid,
+  text,
   pgTableCreator,
   timestamp,
   varchar,
@@ -18,11 +19,12 @@ import {
  */
 export const createTable = pgTableCreator((name) => `xiang-chat_${name}`);
 
-export const posts = createTable(
-  "post",
+export const sessions = createTable(
+  "sessions",
   {
-    id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
-    name: varchar("name", { length: 256 }),
+    sessionId: uuid("session_id").primaryKey().unique().defaultRandom(),
+    userId: varchar("user_id", { length: 256 }).notNull(),
+    sessionTitle: varchar("name", { length: 256 }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -30,7 +32,27 @@ export const posts = createTable(
       () => new Date()
     ),
   },
+
   (example) => ({
-    nameIndex: index("name_idx").on(example.name),
+    userIdIndex: index("user_id_idx").on(example.userId),
+  })
+);
+
+export const messages = createTable(
+  "messages",
+  {
+    messageId: uuid("message_id").primaryKey().unique().defaultRandom(),
+    sessionId: uuid("session_id").notNull(),
+    content: text("content"),
+    content_reasoning: text("content_reasoning"),
+    role: varchar("role", { length: 256 }),
+    model: varchar("model", { length: 256 }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+
+  (example) => ({
+    sessionIdIndex: index("session_id_idx").on(example.sessionId),
   })
 );

@@ -5,10 +5,4 @@ export default function HomePage() {
 
   redirect('/chat')
 
-
-  return (
-    <main>
-
-    </main>
-  );
 }

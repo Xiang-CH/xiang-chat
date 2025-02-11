@@ -182,6 +182,7 @@ function ChatInputSubmit({
 				className,
 			)}
 			disabled={isDisabled}
+			type="submit"
 			onClick={(event) => {
 				event.preventDefault();
 				if (!isDisabled) {
