@@ -1,15 +1,7 @@
 import { createOpenAI } from '@ai-sdk/openai';
-import { streamText, Message } from 'ai';
-import { saveMessage, saveMessages } from '~/lib/message-store';
+import { streamText, type Message } from 'ai';
+import { saveMessage } from '~/lib/message-store';
 import { config } from "dotenv";
-
-type ReasoningUIPart = {
-  type: 'reasoning';
-  /**
-   * The reasoning text.
-   */
-  reasoning: string;
-};
 
 config({ path: ".env" }); 
 
@@ -27,11 +19,11 @@ export async function POST(req: Request) {
   console.log(annotations)
 
   if (messages.length > 1){await saveMessage({
-    messageId: lastMessage?.id || "",
+    messageId: lastMessage?.id ?? "",
     sessionId: id,
-    content: lastMessage?.content || "",
+    content: lastMessage?.content ?? "",
     contentReasoning: null,
-    role: lastMessage?.role || "user",
+    role: lastMessage?.role ?? "user",
     model: 'zhipu/glm-4-flash',
   })}
 
@@ -43,7 +35,7 @@ export async function POST(req: Request) {
         messageId: crypto.randomUUID(),
         sessionId: id,
         content: text,
-        contentReasoning: reasoning || null,
+        contentReasoning: reasoning ?? null,
         role: 'assistant' as "data" | "system" | "user" | "assistant",
         model: 'zhipu/glm-4-flash',
         createdAt: undefined

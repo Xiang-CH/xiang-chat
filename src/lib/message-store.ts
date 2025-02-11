@@ -28,17 +28,17 @@ export async function saveMessage( message: { messageId: string | undefined, ses
     })
 }
 
-export async function saveMessages( messageList: { messageId: string, sessionId: string, content: string, contentReasoning: string | null | undefined, role: "system" | "user" | "assistant" | "data", model: string, createdAt: Date | undefined }[]): Promise<void> {
-  messageList.forEach(async (message) => {
-    await db.insert(messages).values({
-      messageId: message.messageId,
-      sessionId: message.sessionId,
-      content: message.content,
-      content_reasoning: message.contentReasoning,
-      role: message.role,
-      model: message.model,
-      // createdAt: message.createdAt ?? new Date()
-    })
-  })
-}
+// export async function saveMessages( messageList: { messageId: string, sessionId: string, content: string, contentReasoning: string | null | undefined, role: "system" | "user" | "assistant" | "data", model: string, createdAt: Date | undefined }[]): Promise<void> {
+//   messageList.forEach(async (message) => {
+//     await db.insert(messages).values({
+//       messageId: message.messageId,
+//       sessionId: message.sessionId,
+//       content: message.content,
+//       content_reasoning: message.contentReasoning,
+//       role: message.role,
+//       model: message.model,
+//       // createdAt: message.createdAt ?? new Date()
+//     })
+//   })
+// }
 

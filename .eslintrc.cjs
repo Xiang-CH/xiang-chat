@@ -4,7 +4,7 @@ const config = {
   "parserOptions": {
     "project": true
   },
-  "plugins": [
+  plugins: [
     "@typescript-eslint",
     "drizzle"
   ],

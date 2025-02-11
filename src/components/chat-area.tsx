@@ -41,9 +41,9 @@ export default function ChatArea({
       },
     });
 
-  function customHandleSubmit () {
+  async function customHandleSubmit () {
     if (!input) return;
-    createNewSession(input)
+    await createNewSession(input)
   }
 
   useEffect(() => {
