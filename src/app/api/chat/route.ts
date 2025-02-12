@@ -8,6 +8,8 @@ import { auth } from "@clerk/nextjs/server";
 
 config({ path: ".env" }); 
 
+export const maxDuration = 60
+
 const zhipu = createOpenAI({
   baseURL: "https://open.bigmodel.cn/api/paas/v4/",
   apiKey: process.env.ZHIPU_API_KEY,
