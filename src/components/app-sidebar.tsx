@@ -22,7 +22,7 @@ export async function AppSidebar(): Promise<JSX.Element> {
 			<SidebarHeader className="mt-2 px-4">
 				<Link href="/chat" className="w-full">
 					<Button variant="outline" className="shadow-none w-full">
-						New Conversation
+						New Chat
 					</Button>
 				</Link>
 			</SidebarHeader>
@@ -32,9 +32,9 @@ export async function AppSidebar(): Promise<JSX.Element> {
 						<Link
 							key={conversation.sessionId}
 							href={`/chat/${conversation.sessionId}`}
-							className="w-full rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+							className="w-full rounded-md px-2 py-1.5 text-muted-foreground hover:bg-muted hover:text-foreground text-[0.9rem]"
 						>
-							{conversation.sessionTitle}
+							{conversation.sessionTitle? conversation.sessionTitle.length < 15 ? conversation.sessionTitle : conversation.sessionTitle.slice(0, 13) + "..." : "New Chat"}
 						</Link>
 					))}
 				</SidebarGroup>

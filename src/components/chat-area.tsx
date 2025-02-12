@@ -7,6 +7,7 @@ import EmptySession from "~/components/empty-session";
 import { createNewSession } from "~/lib/actions";
 import { MessageReasoning } from "~/components/message-reasoning";
 import { Markdown } from "./markdown";
+import { useRouter } from 'next/navigation'
 
 export default function ChatArea({
   sessionId,
@@ -17,7 +18,8 @@ export default function ChatArea({
   initialMessages?: Message[];
   initialInput?: string | undefined;
 } = {}) {
-  const [model, setModel] = useState<Model>(MODELS[0]);
+  const router = useRouter()
+  const [ model, setModel ] = useState<Model>(MODELS[0]);
   const { input, handleInputChange, handleSubmit, messages, isLoading, stop } =
     useChat({
       id: sessionId, // use the provided chat ID
@@ -28,7 +30,6 @@ export default function ChatArea({
         return crypto.randomUUID();
       },
       experimental_prepareRequestBody: ({ messages, id }) => {
-        // Eslint: Ignore
         const lastMessage = messages[messages.length - 1];
 
         if (!lastMessage) return [];
@@ -56,6 +57,12 @@ export default function ChatArea({
       handleSubmit(new Event("submit"));
     }
   }, []);
+
+  useEffect(() => {
+    if (messages.length == 2){
+      router.refresh()
+    }
+  }, [messages]);
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-between">

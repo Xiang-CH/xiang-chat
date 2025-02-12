@@ -2,6 +2,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { createDeepSeek } from '@ai-sdk/deepseek';
 import { streamText, createDataStreamResponse,smoothStream, type Message } from 'ai';
 import { saveMessage } from '~/lib/message-store';
+import { updateSessionTitle } from '~/lib/session-store';
 import { config } from "dotenv";
 import { auth } from "@clerk/nextjs/server";
 
@@ -25,7 +26,6 @@ export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId) return
 
-
   const lastMessage = messages[messages.length - 1]
   const annotations = lastMessage?.annotations as { model: string, sessionId: string }[] || []
   console.log(annotations)
@@ -37,7 +37,9 @@ export async function POST(req: Request) {
     contentReasoning: null,
     role: lastMessage?.role ?? "user",
     model: MODEL,
-  })}
+  })} else {
+    await updateSessionTitle(id, lastMessage?.content ?? "")
+  }
 
   return createDataStreamResponse({
     execute: (dataStream) => {

@@ -1,6 +1,7 @@
 import { db } from "~/server/db";
 import { sessions } from "~/server/db/schema"
 import { saveMessage } from "~/lib/message-store"
+import { eq } from "drizzle-orm";
 
 export async function loadSessionsByUserId(userId: string | null) {
   return userId
@@ -29,4 +30,8 @@ export async function createNewSession(userId: string, initialMessage: message) 
   })
   initialMessage.sessionId = sessionId
   await saveMessage(initialMessage)
+}
+
+export async function updateSessionTitle(sessionId: string, title: string) {
+  await db.update(sessions).set({ sessionTitle: title }).where(eq(sessions.sessionId, sessionId))
 }
