@@ -41,35 +41,35 @@ export async function POST(req: Request) {
     await updateSessionTitle(id, lastMessage?.content ?? "")
   }
 
-  return createDataStreamResponse({
-    execute: (dataStream) => {
-      const result = streamText({
-        model: baidu(MODEL),
-        messages: messages,
-        temperature: 0.8,
-        experimental_transform: smoothStream({ chunking: 'word' }),
-        async onFinish({ text, reasoning }) {
-          const assistantMessage = {
-            messageId: crypto.randomUUID(),
-            sessionId: id,
-            content: text,
-            contentReasoning: reasoning ?? null,
-            role: 'assistant' as "data" | "system" | "user" | "assistant",
-            model: MODEL,
-            createdAt: undefined
-          }
-          await saveMessage(assistantMessage)
-        }, 
-      });
+  // return createDataStreamResponse({
+  //   execute: (dataStream) => {
+  //     const result = streamText({
+  //       model: baidu(MODEL),
+  //       messages: messages,
+  //       temperature: 0.8,
+  //       experimental_transform: smoothStream({ chunking: 'word' }),
+  //       async onFinish({ text, reasoning }) {
+  //         const assistantMessage = {
+  //           messageId: crypto.randomUUID(),
+  //           sessionId: id,
+  //           content: text,
+  //           contentReasoning: reasoning ?? null,
+  //           role: 'assistant' as "data" | "system" | "user" | "assistant",
+  //           model: MODEL,
+  //           createdAt: undefined
+  //         }
+  //         await saveMessage(assistantMessage)
+  //       }, 
+  //     });
 
-      result.mergeIntoDataStream(dataStream, {
-        sendReasoning: true,
-      });
-    },
-    onError: () => {
-      return 'Oops, an error occured!';
-    },
-  })
+  //     result.mergeIntoDataStream(dataStream, {
+  //       sendReasoning: true,
+  //     });
+  //   },
+  //   onError: () => {
+  //     return 'Oops, an error occured!';
+  //   },
+  // })
 
   const result = streamText({
     model: baidu(MODEL),

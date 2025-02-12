@@ -63,6 +63,7 @@ export default function ChatArea({
     if (messages.length == 2 && !titleRefreshed) {
       setTitleRefreshed(true);
       router.refresh()
+      console.log("refreshed")
     }
   }, [messages]);
 
@@ -84,7 +85,7 @@ export default function ChatArea({
                 <div>
                 {m.parts.map((p, index) => {
                   if (p.type === "text") {
-                    return p.text;
+                    return  <Markdown key={`${m.id}_${index}`}>{p.text}</Markdown>;
                   } else if (p.type === "reasoning") {
                     return (
                       <MessageReasoning
