@@ -63,6 +63,7 @@ export default function ChatArea({
             <div key={m.id}>
               {m.role === "user" ? "User: " : "AI: "}
               {m.content}
+              {JSON.stringify(m.parts)}
               {m.role === "assistant" && <><br/><br/></>}
             </div>
           ))}

@@ -1,11 +1,11 @@
 "use server"
 import { db } from "~/server/db";
-import { messages, sessions } from "~/server/db/schema"
+import { sessions } from "~/server/db/schema"
 import { saveMessage } from "~/lib/message-store"
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from 'next/navigation'
 
-interface message { messageId: string | undefined, sessionId: string, content: string, contentReasoning: string | null | undefined, role: "system" | "user" | "assistant" | "data", model: string }
+// interface message { messageId: string | undefined, sessionId: string, content: string, contentReasoning: string | null | undefined, role: "system" | "user" | "assistant" | "data", model: string }
 
 export async function createNewSession(initialMessage: string) {
     const { userId } = await auth();
