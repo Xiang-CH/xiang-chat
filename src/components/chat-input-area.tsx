@@ -22,42 +22,47 @@ function ChatInputArea({
   className?: string;
   handleSubmit: () => void;
   input: string;
-  handleInputChange: (e: (React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>)) => void;
+  handleInputChange: (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>,
+  ) => void;
   isLoading: boolean;
   stop: () => void;
   model: Model;
   setModel: (model: Model) => void;
 }) {
-
   const { isSignedIn } = useAuth();
 
   return (
-    <div className={`${className} flex w-full max-w-[50rem] mb-2`}>
-      <div className="h-full w-full">
-        <ChatInput
-          variant="default"
-          value={input}
-          onChange={handleInputChange}
-          onSubmit={handleSubmit}
-          loading={isLoading}
-          onStop={() => stop()}
-          className="focus-within:ring-0"
-        >
-          <ChatInputTextArea
-            placeholder="Type a message..."
-            disabled={!isSignedIn}
-          />
-          <div className="flex w-full items-center justify-between">
-            <div>
-              <ModelSelector
-                value={model}
-                onChange={setModel}
-                disabled={!isSignedIn}
-              />
+    <div className="sticky bottom-0 w-full max-w-[50rem] bg-background">
+      <div className={`${className} mb-2 flex w-full max-w-[50rem]`}>
+        <div className="h-full w-full">
+          <ChatInput
+            variant="default"
+            value={input}
+            onChange={handleInputChange}
+            onSubmit={handleSubmit}
+            loading={isLoading}
+            onStop={() => stop()}
+            className="bg-muted focus-within:ring-0"
+          >
+            <ChatInputTextArea
+              placeholder="Type a message..."
+              disabled={!isSignedIn}
+            />
+            <div className="flex w-full items-center justify-between">
+              <div>
+                <ModelSelector
+                  value={model}
+                  onChange={setModel}
+                  disabled={!isSignedIn}
+                />
+              </div>
+              <ChatInputSubmit />
             </div>
-            <ChatInputSubmit />
-          </div>
-        </ChatInput>
+          </ChatInput>
+        </div>
       </div>
     </div>
   );
