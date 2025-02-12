@@ -20,6 +20,7 @@ export default function ChatArea({
 } = {}) {
   const router = useRouter()
   const [ model, setModel ] = useState<Model>(MODELS[0]);
+  const [ titleRefreshed, setTitleRefreshed ] = useState(false);
   const { input, handleInputChange, handleSubmit, messages, isLoading, stop } =
     useChat({
       id: sessionId, // use the provided chat ID
@@ -59,7 +60,8 @@ export default function ChatArea({
   }, []);
 
   useEffect(() => {
-    if (messages.length == 2){
+    if (messages.length == 2 && !titleRefreshed) {
+      setTitleRefreshed(true);
       router.refresh()
     }
   }, [messages]);
@@ -76,7 +78,7 @@ export default function ChatArea({
                 <div
                   className="rounded-xl bg-primary px-3 py-2 text-primary-foreground w-fit justify-self-end"
                 >
-                  <Markdown>{m.content as string}</Markdown>
+                  <Markdown>{m.content}</Markdown>
                 </div>
               ) : (
                 <div>

@@ -7,10 +7,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { cn } from '~/lib/utils';
 
 interface CodeBlockProps {
-  node: any;
+  node: never;
   inline: boolean;
   className: string;
-  children: any;
+  children: never;
 }
 
 export function CodeBlock({
@@ -21,10 +21,10 @@ export function CodeBlock({
   ...props
 }: CodeBlockProps) {
   const [output, setOutput] = useState<string | null>(null);
-  const [pyodide, setPyodide] = useState<any>(null);
-  const match = /language-(\w+)/.exec(className || '');
-  const isPython = match && match[1] === 'python';
-  const codeContent = String(children).replace(/\n$/, '');
+  // const [pyodide, setPyodide] = useState<any>(null);
+  // const match = /language-(\w+)/.exec(className || '');
+  // // const isPython = match && match[1] === 'python';
+  // const codeContent = String(children).replace(/\n$/, '');
   const [tab, setTab] = useState<'code' | 'run'>('code');
 
   if (!inline) {
