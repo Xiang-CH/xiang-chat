@@ -76,7 +76,7 @@ export default function
       {!sessionId ? (
         <EmptySession />
       ) : (
-          <div className="max-w-[50rem] px-4 flex flex-col gap-4">
+          <div className="w-full h-full max-w-[50rem] px-4 flex flex-col gap-4">
             {messages.map((m, messageIndex) => (
               <div key={m.id} className="h-fit">
                 {m.role === "user" ? (

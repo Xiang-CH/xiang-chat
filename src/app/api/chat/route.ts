@@ -20,7 +20,7 @@ const aliyun = createDeepSeek({
   apiKey: process.env.DASHSCOPE_API_KEY,
 });
 
-const MODEL = "deepseek-r1"
+const MODEL = "deepseek-r1-distill-llama-70b"
 
 export async function POST(req: Request) {
   const { messages, id } = (await req.json()) as {messages: Message[], id: string};
