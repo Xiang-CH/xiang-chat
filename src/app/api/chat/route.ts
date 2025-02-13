@@ -20,7 +20,7 @@ const baidu = createDeepSeek({
   apiKey: process.env.BAIDU_API_KEY,
 });
 
-const MODEL = "deepseek-r1"
+const MODEL = "deepseek-r1-distill-qwen-32b"
 
 export async function POST(req: Request) {
   const { messages, id } = (await req.json()) as {messages: Message[], id: string};
