@@ -16,9 +16,11 @@ export function SidebarTab({conversation}: {conversation: { sessionId: string | 
                 key={conversation.sessionId}
                 href={`/chat/${conversation.sessionId}`}
                 onClick={() => setOpenMobile(false)}
-                className="w-full rounded-md px-2 py-1.5 text-muted-foreground hover:bg-muted hover:text-foreground text-[0.9rem]"
+                className="w-full rounded-md px-2 py-1.5 text-muted-foreground hover:bg-muted hover:text-foreground text-[0.9rem] overflow-hidden text-ellipsis text-nowrap"
             >
-                {conversation.sessionTitle? conversation.sessionTitle.length < 15 ? conversation.sessionTitle : conversation.sessionTitle.slice(0, 13) + "..." : "New Chat"}
+                <span>
+                    {conversation.sessionTitle}
+                </span>
             </Link>
         </SidebarMenuButton>
     )

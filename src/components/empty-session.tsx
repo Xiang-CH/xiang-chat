@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 
 export default function EmptySession() {
   return (
-    <div className="flex flex-grow flex-col items-center justify-center px-8">
+    <div className="flex flex-grow flex-col items-center justify-center px-8 h-full">
       <SignedIn>
         <h1 className="mb-6 scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
           How can I help you?

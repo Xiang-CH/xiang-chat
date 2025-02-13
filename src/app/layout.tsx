@@ -32,12 +32,13 @@ export default async function RootLayout({
           >
             <SidebarProvider className="min-w-screen min-h-full">
               <AppSidebar/>
-              <main className="relative flex h-full w-full flex-col box-border">
+              {children}
+              {/* <main className="relative flex h-full w-full flex-col box-border">
                 <div className="p-4 sticky top-0" >
                   <SidebarTrigger/>
                 </div>
                 {children}
-              </main>
+              </main> */}
             </SidebarProvider>
             <Toaster />
           </ThemeProvider>
