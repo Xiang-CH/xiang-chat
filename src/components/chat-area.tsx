@@ -8,19 +8,23 @@ import { createNewSession } from "~/lib/actions";
 import { MessageReasoning } from "~/components/message-reasoning";
 import { Markdown } from "./markdown";
 import { useRouter } from 'next/navigation'
+import { generateUUID } from "~/lib/utils";
+import { ScrollArea } from "~/components/ui/scroll-area"
 
-export default function ChatArea({
-  sessionId,
-  initialMessages,
-  initialInput,
-}: {
-  sessionId?: string | undefined;
-  initialMessages?: Message[];
-  initialInput?: string | undefined;
-} = {}) {
+export default function
+
+  ChatArea({
+    sessionId,
+    initialMessages,
+    initialInput,
+  }: {
+    sessionId?: string | undefined;
+    initialMessages?: Message[];
+    initialInput?: string | undefined;
+  } = {}) {
   const router = useRouter()
-  const [ model, setModel ] = useState<Model>(MODELS[0]);
-  const [ titleRefreshed, setTitleRefreshed ] = useState(false);
+  const [model, setModel] = useState<Model>(MODELS[0]);
+  const [titleRefreshed, setTitleRefreshed] = useState(false);
   const { input, handleInputChange, handleSubmit, messages, isLoading, stop } =
     useChat({
       id: sessionId, // use the provided chat ID
@@ -28,7 +32,7 @@ export default function ChatArea({
       initialInput, // initial input if provided
       sendExtraMessageFields: true, // send id and createdAt for each message
       generateId: () => {
-        return crypto.randomUUID();
+        return generateUUID();
       },
       experimental_prepareRequestBody: ({ messages, id }) => {
         const lastMessage = messages[messages.length - 1];
@@ -68,45 +72,47 @@ export default function ChatArea({
   }, [messages]);
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-between">
+    <div className="flex max-h-full w-full flex-col items-center justify-between">
       {!sessionId ? (
         <EmptySession />
       ) : (
-        <div className="w-full max-w-[50rem] px-4 flex flex-col gap-4 mb-10">
-          {messages.map((m, messageIndex) => (
-            <div key={m.id} className="h-fit">
-              {m.role === "user" ? (
-                <div
-                  className="rounded-xl bg-primary px-3 py-2 text-primary-foreground w-fit justify-self-end"
-                >
-                  <Markdown>{m.content}</Markdown>
-                </div>
-              ) : (
-                <div>
-                {m.parts.map((p, index) => {
-                  if (p.type === "text") {
-                    return  <Markdown key={`${m.id}_${index}`}>{p.text}</Markdown>;
-                  } else if (p.type === "reasoning") {
-                    return (
-                      <MessageReasoning
-                        key={`${m.id}_${index}`}
-                        isLoading={
-                          messageIndex == messages.length - 1
-                            ? isLoading
-                            : false
-                        }
-                        reasoning={p.reasoning}
-                      />
-                    );
-                  } else {
-                    return null;
-                  }
-                })}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+          <div className="max-w-[50rem] px-4 flex flex-col gap-4">
+            {messages.map((m, messageIndex) => (
+              <div key={m.id} className="h-fit">
+                {m.role === "user" ? (
+                  <div
+                    className="rounded-xl bg-primary px-3 py-2 text-primary-foreground w-fit justify-self-end"
+                  >
+                    <Markdown>{m.content}</Markdown>
+                  </div>
+                ) : (
+                  <div>
+                    {m.parts.map((p, index) => {
+                      if (p.type === "text") {
+                        return <Markdown key={`${m.id}_${index}`}>{p.text}</Markdown>;
+                      } else if (p.type === "reasoning") {
+                        return (
+                          <MessageReasoning
+                            key={`${m.id}_${index}`}
+                            isLoading={
+                              messageIndex == messages.length - 1
+                                ? isLoading
+                                : false
+                            }
+                            reasoning={p.reasoning}
+                          />
+                        );
+                      } else {
+                        return null;
+                      }
+                    })}
+                  </div>
+                )}
+              </div>
+            ))}
+            <div className="h-6"></div>
+          </div>
+
       )}
 
       <ChatInputArea

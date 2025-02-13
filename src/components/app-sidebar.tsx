@@ -4,38 +4,31 @@ import {
 	SidebarFooter,
 	SidebarGroup,
 	SidebarHeader,
+	SidebarMenuButton,
 } from "~/components/ui/sidebar";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { SidebarTab, NewChatButton } from "./sidebar-buttons";
 
 import { loadSessionsByUserId } from "~/lib/session-store";
 
 export async function AppSidebar(): Promise<JSX.Element> {
 	const { userId } = await auth();
+	// const currentPath = location.pathname;
 
 	const conversations = await loadSessionsByUserId(userId);
 
 	return (
 		<Sidebar className="border-r-[1px] border-sidebar-border">
 			<SidebarHeader className="mt-2 px-4">
-				<Link href="/chat" className="w-full">
-					<Button variant="outline" className="shadow-none w-full">
-						New Chat
-					</Button>
-				</Link>
+				<NewChatButton />
 			</SidebarHeader>
 			<SidebarContent>
-				<SidebarGroup className="flex w-full flex-col px-4">
+				<SidebarGroup className="flex w-full flex-col px-4 gap-[2px]">
 					{conversations.map((conversation) => (
-						<Link
-							key={conversation.sessionId}
-							href={`/chat/${conversation.sessionId}`}
-							className="w-full rounded-md px-2 py-1.5 text-muted-foreground hover:bg-muted hover:text-foreground text-[0.9rem]"
-						>
-							{conversation.sessionTitle? conversation.sessionTitle.length < 15 ? conversation.sessionTitle : conversation.sessionTitle.slice(0, 13) + "..." : "New Chat"}
-						</Link>
+						<SidebarTab conversation={conversation} key={conversation.sessionId}/>
 					))}
 				</SidebarGroup>
 			</SidebarContent>

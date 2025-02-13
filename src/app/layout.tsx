@@ -24,16 +24,18 @@ export default async function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={`${GeistSans.variable}`} suppressHydrationWarning>
-        <body className="flex min-h-screen">
+        <body className="flex min-h-[100dvh] max-h-[100dvh]">
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
           >
-            <SidebarProvider className="min-w-screen min-h-screen">
+            <SidebarProvider className="min-w-screen min-h-full">
               <AppSidebar/>
-              <main className="relative flex h-full w-full flex-col">
-                <SidebarTrigger className="m-4"/>
+              <main className="relative flex h-full w-full flex-col box-border">
+                <div className="p-4 sticky top-0" >
+                  <SidebarTrigger/>
+                </div>
                 {children}
               </main>
             </SidebarProvider>

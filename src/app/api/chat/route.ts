@@ -15,12 +15,12 @@ const zhipu = createOpenAI({
   apiKey: process.env.ZHIPU_API_KEY,
 });
 
-const baidu = createDeepSeek({
-  baseURL: "https://qianfan.baidubce.com/v2/",
-  apiKey: process.env.BAIDU_API_KEY,
+const aliyun = createDeepSeek({
+  baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+  apiKey: process.env.DASHSCOPE_API_KEY,
 });
 
-const MODEL = "deepseek-r1-distill-qwen-32b"
+const MODEL = "deepseek-r1"
 
 export async function POST(req: Request) {
   const { messages, id } = (await req.json()) as {messages: Message[], id: string};
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
   // })
 
   const result = streamText({
-    model: baidu(MODEL),
+    model: aliyun(MODEL),
     messages: messages,
     temperature: 0.8,
     async onFinish({ text, reasoning }) {

@@ -1,8 +1,9 @@
-import { SignedIn, SignedOut } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
+import { Button } from "./ui/button";
 
 export default function EmptySession() {
   return (
-    <div className="flex flex-grow flex-col items-center justify-center">
+    <div className="flex flex-grow flex-col items-center justify-center px-8">
       <SignedIn>
         <h1 className="mb-6 scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
           How can I help you?
@@ -14,7 +15,10 @@ export default function EmptySession() {
           <br />
           Please sign in to chat
         </h1>
+        <SignInButton>
+          <Button>Sign In</Button>
+        </SignInButton>
       </SignedOut>
     </div>
-  );
+  ); 
 }
