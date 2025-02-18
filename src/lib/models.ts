@@ -38,31 +38,35 @@ export const MODEL_DATA = [
         id: "aliyun/deepseek-r1-llama-70b",
         name: "Deepseek R1 llama 70b",
         icon: "deepseek",
-        model: MODEL_PROVIDERS["aliyun"]("deepseek-r1-distill-llama-70b"),
+        model: MODEL_PROVIDERS.aliyun("deepseek-r1-distill-llama-70b"),
         provider: "aliyun",
     },
     {
         id: "openrouter/deepseek-r1-llama-70b",
         name: "Deepseek R1 llama 70b",
         icon: "deepseek",
-        model: MODEL_PROVIDERS["openrouter"]("deepseek/deepseek-r1-distill-llama-70b:free"),
+        model: MODEL_PROVIDERS.openrouter("deepseek/deepseek-r1-distill-llama-70b:free"),
         provider: "openrouter",
     },
     {
         id: "glm-4-flash",
         name: 'GLM 4 Flash',
         icon: "zhipu",
-        model: MODEL_PROVIDERS["zhipu"]("glm-4-flash"),
+        model: MODEL_PROVIDERS.zhipu("glm-4-flash"),
         provider: "zhipu",
     },
     {
         id: "qwen2.5-vl-72b",
         name: 'Qwen 2.5 VL 72b',
         icon: "qwen",
-        model: MODEL_PROVIDERS["openrouter"]("qwen/qwen2.5-vl-72b-instruct:free"),
+        model: MODEL_PROVIDERS.openrouter("qwen/qwen2.5-vl-72b-instruct:free"),
         provider: "openrouter",
     }
 ] as {id: Model, name: string, icon: ModelIcon, model: LanguageModelV1, provider: ProviderName, disabled?: boolean}[];
+
+export function getModelProvider(model: Model): ProviderName {
+    return MODEL_DATA.find(item => item.id === model)!.provider;
+}
 
 
 export const myProvider = customProvider({

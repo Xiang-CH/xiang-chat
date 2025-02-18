@@ -29,7 +29,7 @@ export default function ChatArea({
   const router = useRouter();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [ userScrolled, setUserScrolled ] = useState(false);
-  const [ model, setModel ] = useState<Model>(initialModel || MODELS[0]);
+  const [ model, setModel ] = useState<Model>(initialModel ?? MODELS[0]);
   const [ titleRefreshed, setTitleRefreshed ] = useState(false);
   const { input, handleInputChange, handleSubmit, messages, isLoading, stop } =
     useChat({
@@ -137,7 +137,7 @@ export default function ChatArea({
                         />
                       );
                     } else {
-                      null
+                      return null
                     }
                   })}
                   {messageIndex == messages.length - 1 && isLoading && (<PulseLoader color="hsl(var(--foreground))" size={5} />)}

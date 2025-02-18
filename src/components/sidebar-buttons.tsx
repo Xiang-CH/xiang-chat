@@ -71,7 +71,7 @@ export function SidebarTab({
             <input
               type="text"
               className="w-full overflow-hidden text-ellipsis text-nowrap px-1 py-1.5 text-[0.9rem] text-muted-foreground"
-              defaultValue={sessionTitle || ""}
+              defaultValue={sessionTitle ?? ""}
               autoFocus
               onBlur={handleRenameTab}
               onKeyDown={async (e) => {

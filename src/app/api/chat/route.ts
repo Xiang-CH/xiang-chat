@@ -3,7 +3,7 @@ import { saveMessage } from '~/lib/message-store';
 import { updateSessionTitle } from '~/lib/session-store';
 import { config } from "dotenv";
 import { auth } from "@clerk/nextjs/server";
-import { myProvider, DEFAULT_MODEL } from '~/lib/models';
+import { myProvider, DEFAULT_MODEL, Model } from '~/lib/models';
 
 config({ path: ".env" }); 
 
@@ -19,7 +19,8 @@ export async function POST(req: Request) {
   const annotations = lastMessage?.annotations as { model: string, sessionId: string }[] || []
   // console.log(annotations)
 
-  const model = annotations[0]?.model ?? DEFAULT_MODEL
+  const modelName = annotations[0]?.model as Model ?? DEFAULT_MODEL as Model
+  let model = myProvider.languageModel(modelName);
 
   if (messages.length > 1){await saveMessage({
     messageId: lastMessage?.id ?? "",
@@ -27,16 +28,16 @@ export async function POST(req: Request) {
     content: lastMessage?.content ?? "",
     contentReasoning: null,
     role: lastMessage?.role ?? "user",
-    model: model,
+    model: modelName,
   })} else {
     await updateSessionTitle(id, lastMessage?.content ?? "")
   }
 
   return createDataStreamResponse({
     execute: (dataStream) => {
-      dataStream.writeMessageAnnotation({ model: model });
+      dataStream.writeMessageAnnotation({ model: modelName });
       const result = streamText({
-        model: myProvider.languageModel(model),
+        model: model,
         messages: messages,
         temperature: 0.8,
         experimental_transform: smoothStream({ chunking: 'word' }),
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
             content: text,
             contentReasoning: reasoning ?? null,
             role: 'assistant' as "data" | "system" | "user" | "assistant",
-            model: model,
+            model: modelName,
             createdAt: undefined
           }
           await saveMessage(assistantMessage)

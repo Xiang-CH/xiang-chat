@@ -11,7 +11,7 @@ export default async function chatSession(props: { params: Promise<{ sessionId: 
     if (!userId) return <RedirectToSignIn />;
 
     const { sessionId } = await props.params;
-    let initialMessages: any[] = []
+    let initialMessages = []
 
     try {
         initialMessages = await loadChat(sessionId)
