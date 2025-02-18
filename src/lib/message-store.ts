@@ -1,6 +1,7 @@
 import { type Message } from 'ai';
 import { db } from "~/server/db";
 import { messages } from '~/server/db/schema';
+import { eq } from "drizzle-orm";
 
 export async function loadChat(sessionId: string): Promise<Message[]> {
   const db_messages = await db.query.messages.findMany({
@@ -14,8 +15,12 @@ export async function loadChat(sessionId: string): Promise<Message[]> {
     parts: message.contenReasoning? [{type: "reasoning" ,reasoning: message.contenReasoning}, {type: "text", text: message.content ?? ""}] : [{type: "text", text: message.content ?? ""}],
     role: message.role as "system" | "user" | "assistant" | "data",
     createdAt: message.createdAt,
-    annotation: [{model: message.model, sessionId: message.sessionId}]
+    annotations: [{model: message.model, sessionId: message.sessionId}]
   }));
+}
+
+export async function deleteAllMessageBySessionId(sessionId: string): Promise<void> {
+  await db.delete(messages).where(eq(messages.sessionId, sessionId))
 }
 
 export async function saveMessage( message: { messageId: string | undefined, sessionId: string, content: string, contentReasoning: string | null | undefined, role: "system" | "user" | "assistant" | "data", model: string }): Promise<void> {

@@ -1,26 +1,13 @@
-import { createOpenAI } from '@ai-sdk/openai';
-import { createDeepSeek } from '@ai-sdk/deepseek';
-import { streamText, createDataStreamResponse,smoothStream, type Message } from 'ai';
+import { createDataStreamResponse, smoothStream, streamText, type Message } from 'ai';
 import { saveMessage } from '~/lib/message-store';
 import { updateSessionTitle } from '~/lib/session-store';
 import { config } from "dotenv";
 import { auth } from "@clerk/nextjs/server";
+import { myProvider, DEFAULT_MODEL } from '~/lib/models';
 
 config({ path: ".env" }); 
 
-export const maxDuration = 60
-
-const zhipu = createOpenAI({
-  baseURL: "https://open.bigmodel.cn/api/paas/v4/",
-  apiKey: process.env.ZHIPU_API_KEY,
-});
-
-const aliyun = createDeepSeek({
-  baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
-  apiKey: process.env.DASHSCOPE_API_KEY,
-});
-
-const MODEL = "deepseek-r1-distill-llama-70b"
+export const maxDuration = 360
 
 export async function POST(req: Request) {
   const { messages, id } = (await req.json()) as {messages: Message[], id: string};
@@ -30,7 +17,9 @@ export async function POST(req: Request) {
 
   const lastMessage = messages[messages.length - 1]
   const annotations = lastMessage?.annotations as { model: string, sessionId: string }[] || []
-  console.log(annotations)
+  // console.log(annotations)
+
+  const model = annotations[0]?.model ?? DEFAULT_MODEL
 
   if (messages.length > 1){await saveMessage({
     messageId: lastMessage?.id ?? "",
@@ -38,59 +27,60 @@ export async function POST(req: Request) {
     content: lastMessage?.content ?? "",
     contentReasoning: null,
     role: lastMessage?.role ?? "user",
-    model: MODEL,
+    model: model,
   })} else {
     await updateSessionTitle(id, lastMessage?.content ?? "")
   }
 
-  // return createDataStreamResponse({
-  //   execute: (dataStream) => {
-  //     const result = streamText({
-  //       model: baidu(MODEL),
-  //       messages: messages,
-  //       temperature: 0.8,
-  //       experimental_transform: smoothStream({ chunking: 'word' }),
-  //       async onFinish({ text, reasoning }) {
-  //         const assistantMessage = {
-  //           messageId: crypto.randomUUID(),
-  //           sessionId: id,
-  //           content: text,
-  //           contentReasoning: reasoning ?? null,
-  //           role: 'assistant' as "data" | "system" | "user" | "assistant",
-  //           model: MODEL,
-  //           createdAt: undefined
-  //         }
-  //         await saveMessage(assistantMessage)
-  //       }, 
-  //     });
+  return createDataStreamResponse({
+    execute: (dataStream) => {
+      dataStream.writeMessageAnnotation({ model: model });
+      const result = streamText({
+        model: myProvider.languageModel(model),
+        messages: messages,
+        temperature: 0.8,
+        experimental_transform: smoothStream({ chunking: 'word' }),
+        async onFinish({ text, reasoning }) {
+          const assistantMessage = {
+            messageId: crypto.randomUUID(),
+            sessionId: id,
+            content: text,
+            contentReasoning: reasoning ?? null,
+            role: 'assistant' as "data" | "system" | "user" | "assistant",
+            model: model,
+            createdAt: undefined
+          }
+          await saveMessage(assistantMessage)
+        }, 
+      });
 
-  //     result.mergeIntoDataStream(dataStream, {
-  //       sendReasoning: true,
-  //     });
-  //   },
-  //   onError: () => {
-  //     return 'Oops, an error occured!';
-  //   },
-  // })
-
-  const result = streamText({
-    model: aliyun(MODEL),
-    messages: messages,
-    temperature: 0.8,
-    async onFinish({ text, reasoning }) {
-      console.log("reasoning", reasoning)
-      const assistantMessage = {
-        messageId: crypto.randomUUID(),
-        sessionId: id,
-        content: text,
-        contentReasoning: reasoning ?? null,
-        role: 'assistant' as "data" | "system" | "user" | "assistant",
-        model: MODEL,
-        createdAt: undefined
-      }
-      await saveMessage(assistantMessage)
+      result.mergeIntoDataStream(dataStream, {
+        sendReasoning: true,
+      });
     },
-  });
+    onError: () => {
+      return 'Oops, an error occured!';
+    },
+  })
 
-  return result.toDataStreamResponse({sendReasoning: true});
+  // const result = streamText({
+  //   model: myProvider.languageModel("aliyun/deepseek-r1-llama-70b"),
+  //   messages: messages,
+  //   temperature: 0.8,
+  //   async onFinish({ text, reasoning }) {
+  //     console.log("reasoning", reasoning)
+  //     const assistantMessage = {
+  //       messageId: crypto.randomUUID(),
+  //       sessionId: id,
+  //       content: text,
+  //       contentReasoning: reasoning ?? null,
+  //       role: 'assistant' as "data" | "system" | "user" | "assistant",
+  //       model: model,
+  //       createdAt: undefined
+  //     }
+  //     await saveMessage(assistantMessage)
+  //   },
+  // });
+
+  // return result.toDataStreamResponse({sendReasoning: true, sendUsage: true});
 }

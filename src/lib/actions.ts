@@ -2,12 +2,18 @@
 import { db } from "~/server/db";
 import { sessions } from "~/server/db/schema"
 import { saveMessage } from "~/lib/message-store"
+import { deleteSessionBySessionId, updateSessionTitle } from "~/lib/session-store"
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from 'next/navigation'
+import { Model } from "~/lib/models";
 
 // interface message { messageId: string | undefined, sessionId: string, content: string, contentReasoning: string | null | undefined, role: "system" | "user" | "assistant" | "data", model: string }
 
-export async function createNewSession(initialMessage: string) {
+export async function deleteSession(sessionId: string) {
+    await deleteSessionBySessionId(sessionId)
+}
+
+export async function createNewSession(initialMessage: string, model: Model) {
     const { userId } = await auth();
 
     if (!userId) return
@@ -25,9 +31,13 @@ export async function createNewSession(initialMessage: string) {
         content: initialMessage,
         contentReasoning: undefined,
         role: "user" as "system" | "user" | "assistant" | "data",
-        model: "zhipu/glm-4-flash"
+        model: model
     }
     await saveMessage(message)
     
     redirect(`/chat/${sessionId}`)
+}
+
+export async function changeSessionTitle(sessionId: string, title: string) {
+    await updateSessionTitle(sessionId, title)
 }
