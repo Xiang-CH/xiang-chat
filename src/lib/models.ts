@@ -27,6 +27,9 @@ const MODEL_PROVIDERS = {
     }),
     "openrouter": createOpenRouter({
         apiKey: process.env.OPENROUTER_API_KEY,
+        extraBody: {
+            "include_reasoning": true,
+        }
     })
 }; 
 type ProviderName = keyof typeof MODEL_PROVIDERS;

@@ -95,9 +95,9 @@ export default function ChatArea({
   };
 
   useEffect(() => {
-    if (messages.length === 2 && !titleRefreshed) {
-      setTitleRefreshed(true);
+    if (messages.length == 2 && !titleRefreshed) {
       router.refresh();
+      setTitleRefreshed(true);
       console.log("refreshed");
     }
     scrollToBottom();
