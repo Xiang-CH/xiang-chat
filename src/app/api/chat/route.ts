@@ -12,7 +12,7 @@ import { myProvider, DEFAULT_MODEL, Model } from "~/lib/models";
 
 config({ path: ".env" });
 
-export const maxDuration = 360;
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
   const { messages, id } = (await req.json()) as {
