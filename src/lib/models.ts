@@ -1,12 +1,13 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { createDeepSeek } from '@ai-sdk/deepseek';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { createGroq } from '@ai-sdk/groq';
 import { customProvider, type LanguageModelV1 } from 'ai';
 import { config } from "dotenv";
 
 config({ path: ".env" });
 
-export const MODELS = ["aliyun/deepseek-r1-llama-70b", "openrouter/deepseek-r1-llama-70b", "glm-4-flash", "qwen2.5-vl-72b"] as const;
+export const MODELS = ["groq/deepseek-r1-distill-qwen-32b", "openrouter/deepseek-r1-llama-70b", "glm-4-flash", "qwen2.5-vl-72b"] as const;
 export type Model = typeof MODELS[number];
 export const DEFAULT_MODEL = MODELS[0];
 
@@ -30,7 +31,10 @@ const MODEL_PROVIDERS = {
         extraBody: {
             "include_reasoning": true,
         }
-    })
+    }),
+    "groq": createGroq({
+        apiKey: process.env.GROQ_API_KEY,
+    }),
 }; 
 type ProviderName = keyof typeof MODEL_PROVIDERS;
 
@@ -38,15 +42,15 @@ export type Provider = ReturnType<typeof createOpenAI> | ReturnType<typeof creat
 
 export const MODEL_DATA = [
     {
-        id: "aliyun/deepseek-r1-llama-70b",
-        name: "Deepseek R1 llama 70b",
+        id: "groq/deepseek-r1-distill-qwen-32b",
+        name: "Deepseek R1 distill Qwen",
         icon: "deepseek",
-        model: MODEL_PROVIDERS.aliyun("deepseek-r1-distill-llama-70b"),
-        provider: "aliyun",
+        model: MODEL_PROVIDERS.groq("deepseek-r1-distill-qwen-32b"),
+        provider: "groq",
     },
     {
         id: "openrouter/deepseek-r1-llama-70b",
-        name: "Deepseek R1 llama 70b",
+        name: "Deepseek R1 distill llama",
         icon: "deepseek",
         model: MODEL_PROVIDERS.openrouter("deepseek/deepseek-r1-distill-llama-70b:free"),
         provider: "openrouter",
