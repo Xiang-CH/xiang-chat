@@ -75,7 +75,7 @@ export async function POST(req: Request) {
       });
     },
     onError: (error) => {
-      return "Error: " + error;
+      return "Error: " + JSON.stringify(error);
     },
   });
 
