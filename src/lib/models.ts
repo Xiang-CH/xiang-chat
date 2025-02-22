@@ -2,7 +2,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { createDeepSeek } from '@ai-sdk/deepseek';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { createGroq } from '@ai-sdk/groq';
-import { customProvider, type LanguageModelV1 } from 'ai';
+import { customProvider, type LanguageModelV1, extractReasoningMiddleware, wrapLanguageModel } from 'ai';
 import { config } from "dotenv";
 
 config({ path: ".env" });
@@ -38,14 +38,20 @@ const MODEL_PROVIDERS = {
 }; 
 type ProviderName = keyof typeof MODEL_PROVIDERS;
 
-export type Provider = ReturnType<typeof createOpenAI> | ReturnType<typeof createDeepSeek> | ReturnType<typeof createOpenRouter>;
+export type Provider = ReturnType<typeof createOpenAI> | ReturnType<typeof createDeepSeek> | ReturnType<typeof createOpenRouter> | ReturnType<typeof createGroq>;
 
 export const MODEL_DATA = [
     {
         id: "groq/deepseek-r1-distill-qwen-32b",
         name: "Deepseek R1 distill Qwen",
         icon: "deepseek",
-        model: MODEL_PROVIDERS.groq("deepseek-r1-distill-qwen-32b"),
+        // model: MODEL_PROVIDERS.groq("deepseek-r1-distill-qwen-32b"),
+        model: wrapLanguageModel({
+            model: MODEL_PROVIDERS.groq("deepseek-r1-distill-qwen-32b") as LanguageModelV1,
+            middleware: extractReasoningMiddleware({
+                tagName: "think"
+            }),
+          }),
         provider: "groq",
     },
     {

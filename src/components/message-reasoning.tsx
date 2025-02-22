@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { ChevronDownIcon, LoaderIcon } from './icons';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Markdown } from './markdown';
+import { useState } from "react";
+import { ChevronDownIcon, LoaderIcon } from "./icons";
+import { motion, AnimatePresence } from "framer-motion";
+import { Markdown } from "./markdown";
 
 interface MessageReasoningProps {
   isLoading: boolean;
@@ -24,35 +24,50 @@ export function MessageReasoning({
       marginBottom: 0,
     },
     expanded: {
-      height: 'auto',
+      height: "auto",
       opacity: 1,
-      marginTop: '1rem',
-      marginBottom: '0.5rem',
+      marginTop: "1rem",
+      marginBottom: "0.5rem",
     },
   };
 
   return (
-    <div className="flex flex-col">
-      {isLoading ? (
-        <div className="flex flex-row gap-2 items-center">
-          <div className="font-medium">Reasoning</div>
-          <div className="animate-spin">
-            <LoaderIcon />
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-row gap-2 items-center">
-          <div className="font-medium">Reasoned for a few seconds</div>
-          <div
-            className="cursor-pointer"
-            onClick={() => {
-              setIsExpanded(!isExpanded);
-            }}
-          >
-            <ChevronDownIcon />
-          </div>
-        </div>
-      )}
+    <div className="flex flex-col pb-2">
+      <div className="flex flex-row items-center gap-2">
+      <div
+              className={
+                "font-medium" +
+                (isExpanded ? "" : " text-zinc-600 dark:text-zinc-400")
+              }
+            >
+              Reasoning
+            </div>
+        {isLoading ? (
+          <>
+            {/* <div className="font-medium">Reasoning</div> */}
+            <div className="animate-spin">
+              <LoaderIcon />
+            </div>
+          </>
+        ) : (
+          <>
+            
+            <div
+              className={
+                "cursor-pointer transition-all" +
+                (!isExpanded
+                  ? " text-zinc-600 dark:text-zinc-400"
+                  : " rotate-180")
+              }
+              onClick={() => {
+                setIsExpanded(!isExpanded);
+              }}
+            >
+              <ChevronDownIcon />
+            </div>
+          </>
+        )}
+      </div>
 
       <AnimatePresence initial={false}>
         {isExpanded && (
@@ -62,9 +77,9 @@ export function MessageReasoning({
             animate="expanded"
             exit="collapsed"
             variants={variants}
-            transition={{ duration: 0.2, ease: 'easeInOut' }}
-            style={{ overflow: 'hidden' }}
-            className="pl-4 text-zinc-600 dark:text-zinc-400 border-l flex flex-col gap-4"
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            style={{ overflow: "hidden" }}
+            className="flex flex-col gap-4 border-l pl-4 text-zinc-600 dark:text-zinc-400"
           >
             <Markdown>{reasoning}</Markdown>
           </motion.div>

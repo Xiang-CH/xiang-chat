@@ -53,6 +53,9 @@ export async function POST(req: Request) {
         messages: messages,
         temperature: 0.8,
         experimental_transform: smoothStream({ chunking: "word" }),
+        async onError(err) {
+          console.log("err", err);
+        },
         async onFinish({ text, reasoning }) {
           const assistantMessage = {
             messageId: crypto.randomUUID(),
@@ -71,8 +74,8 @@ export async function POST(req: Request) {
         sendReasoning: true,
       });
     },
-    onError: () => {
-      return "Oops, an error occured!";
+    onError: (error) => {
+      return "Error: " + error;
     },
   });
 

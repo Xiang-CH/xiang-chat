@@ -35,7 +35,7 @@ function ChatInputArea({
   const { isSignedIn } = useAuth();
 
   return (
-    <div className="sticky bottom-0 w-full max-w-[50rem] md:bg-background bg-muted rounded-t-2xl">
+    <div className="absolute bottom-0 w-full max-w-[50rem] md:bg-background bg-muted rounded-t-2xl">
       <div className={`${className} md:mb-2 flex w-full max-w-[50rem]`}>
         <div className="h-full w-full">
           <ChatInput
