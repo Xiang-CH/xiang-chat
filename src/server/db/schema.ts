@@ -42,7 +42,7 @@ export const messages = createTable(
   "messages",
   {
     messageId: uuid("message_id").primaryKey().unique().defaultRandom(),
-    sessionId: uuid("session_id").notNull(),
+    sessionId: uuid("session_id").notNull().references(() => sessions.sessionId),
     content: text("content"),
     contenReasoning: text("content_reasoning"),
     role: varchar("role", { length: 256 }),
