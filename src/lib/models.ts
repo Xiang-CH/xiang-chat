@@ -2,6 +2,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { createDeepSeek } from '@ai-sdk/deepseek';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { createGroq } from '@ai-sdk/groq';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { customProvider, type LanguageModelV1, extractReasoningMiddleware, wrapLanguageModel } from 'ai';
 import { config } from "dotenv";
 
@@ -11,7 +12,7 @@ export const MODELS = ["groq/deepseek-r1-distill-qwen-32b", "openrouter/deepseek
 export type Model = typeof MODELS[number];
 export const DEFAULT_MODEL = MODELS[0];
 
-export const MODEL_ICONS = ["deepseek", "zhipu", "openai", "groq", "qwen"] as const;
+export const MODEL_ICONS = ["deepseek", "zhipu", "openai", "groq", "qwen", "gemini"] as const;
 export type ModelIcon = typeof MODEL_ICONS[number];
 
 const MODEL_PROVIDERS = {
@@ -35,10 +36,13 @@ const MODEL_PROVIDERS = {
     "groq": createGroq({
         apiKey: process.env.GROQ_API_KEY,
     }),
+    "google": createGoogleGenerativeAI({
+        apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    }),
 }; 
 type ProviderName = keyof typeof MODEL_PROVIDERS;
 
-export type Provider = ReturnType<typeof createOpenAI> | ReturnType<typeof createDeepSeek> | ReturnType<typeof createOpenRouter> | ReturnType<typeof createGroq>;
+export type Provider = ReturnType<typeof createOpenAI> | ReturnType<typeof createDeepSeek> | ReturnType<typeof createOpenRouter> | ReturnType<typeof createGroq> | ReturnType<typeof createGoogleGenerativeAI>;
 
 export const MODEL_DATA = [
     {
@@ -53,6 +57,13 @@ export const MODEL_DATA = [
             }),
           }),
         provider: "groq",
+    },
+    {
+        id: "gemini-2.0-flash",
+        name: "Gemini 2.0 Flash",
+        icon: "gemini",
+        model: MODEL_PROVIDERS.google("gemini-2.0-flash"),
+        provider: "google",
     },
     {
         id: "openrouter/deepseek-r1-llama-70b",
