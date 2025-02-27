@@ -29,14 +29,14 @@ function ChatInputArea({
   ) => void;
   isLoading: boolean;
   stop: () => void;
-  model: Model;
+  model: Model | undefined;
   setModel: (model: Model) => void;
 }) {
   const { isSignedIn } = useAuth();
 
   return (
-    <div className="absolute bottom-0 w-full max-w-[50rem] md:bg-background bg-muted rounded-t-2xl">
-      <div className={`${className} md:mb-2 flex w-full max-w-[50rem]`}>
+    <div className="absolute bottom-0 w-full max-w-[50rem] md:bg-background bg-muted rounded-t-2xl flex justify-center">
+      <div className={`${className} md:mb-2 flex w-full max-w-[50rem] md:w-[98%]`}>
         <div className="h-full w-full">
           <ChatInput
             variant="default"

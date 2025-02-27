@@ -1,11 +1,10 @@
 "use server"
 import { db } from "~/server/db";
 import { sessions } from "~/server/db/schema"
-import { saveMessage } from "~/lib/message-store"
+import { saveMessage, loadChat as loadChatServer } from "~/lib/message-store"
 import { deleteSessionBySessionId, updateSessionTitle } from "~/lib/session-store"
 import { auth } from "@clerk/nextjs/server";
-import { redirect } from 'next/navigation'
-import { Model } from "~/lib/models";
+import { type Model } from "~/lib/models";
 
 // interface message { messageId: string | undefined, sessionId: string, content: string, contentReasoning: string | null | undefined, role: "system" | "user" | "assistant" | "data", model: string }
 
@@ -34,10 +33,14 @@ export async function createNewSession(initialMessage: string, model: Model) {
         model: model
     }
     await saveMessage(message)
-    
-    redirect(`/chat/${sessionId}`)
+    return sessionId
+    // redirect(`/chat/${sessionId}`)
 }
 
 export async function changeSessionTitle(sessionId: string, title: string) {
     await updateSessionTitle(sessionId, title)
+}
+
+export async function loadChat(sessionId: string) {
+    return await loadChatServer(sessionId)
 }

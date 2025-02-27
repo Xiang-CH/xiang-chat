@@ -8,7 +8,7 @@ import { saveMessage } from "~/lib/message-store";
 import { updateSessionTitle } from "~/lib/session-store";
 import { config } from "dotenv";
 import { auth } from "@clerk/nextjs/server";
-import { myProvider, DEFAULT_MODEL, Model } from "~/lib/models";
+import { myProvider, DEFAULT_MODEL, type Model } from "~/lib/models";
 
 config({ path: ".env" });
 

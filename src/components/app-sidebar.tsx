@@ -4,12 +4,10 @@ import {
 	SidebarFooter,
 	SidebarGroup,
 	SidebarHeader,
-	SidebarMenuButton,
 } from "~/components/ui/sidebar";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import { Button } from "./ui/button";
-import Link from "next/link";
 import { SidebarTab, NewChatButton } from "./sidebar-buttons";
 
 import { loadSessionsByUserId } from "~/lib/session-store";

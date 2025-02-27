@@ -10,7 +10,7 @@ import type { ElementType, SVGProps } from "react";
 import { MODEL_DATA, type Model, type ModelIcon } from "~/lib/models";
 
 interface ModelSelectorProps extends SelectProps {
-  value: Model;
+  value: Model | undefined;
   onChange: (value: Model) => void;
 }
 
