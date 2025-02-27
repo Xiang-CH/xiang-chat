@@ -79,3 +79,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+pre > code {
+  /* style it to look how you want */
+}

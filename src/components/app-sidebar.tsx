@@ -8,13 +8,13 @@ import {
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import { Button } from "./ui/button";
-import { SidebarTab, NewChatButton } from "./sidebar-buttons";
+import { SidebarTab, NewChatButton, NewSessionTab } from "./sidebar-buttons";
 
 import { loadSessionsByUserId } from "~/lib/session-store";
+import { ScrollArea } from "~/components/ui/scroll-area";
 
 export async function AppSidebar(): Promise<JSX.Element> {
 	const { userId } = await auth();
-	// const currentPath = location.pathname;
 
 	const conversations = await loadSessionsByUserId(userId);
 
@@ -23,12 +23,17 @@ export async function AppSidebar(): Promise<JSX.Element> {
 			<SidebarHeader className="mt-2 px-4">
 				<NewChatButton />
 			</SidebarHeader>
-			<SidebarContent>
-				<SidebarGroup className="flex w-full flex-col px-4 gap-[2px]">
-					{conversations.map((conversation) => (
-						<SidebarTab conversation={conversation} key={conversation.sessionId}/>
-					))}
-				</SidebarGroup>
+			<SidebarContent className="relative max-w-full">
+		
+				<ScrollArea className="h-full w-full relative">
+					<SidebarGroup className="flex max-w-[16rem] flex-col px-4 gap-[2px]">
+						<NewSessionTab sessions={conversations}/>
+						{conversations.map((conversation) => (
+							<SidebarTab conversation={conversation} key={conversation.sessionId}/>
+						))}
+					</SidebarGroup>
+				</ScrollArea>
+
 			</SidebarContent>
 			<SidebarFooter className="flex h-16 items-center justify-center border-t-[1px] border-sidebar-border py-4">
 				<SignedIn>

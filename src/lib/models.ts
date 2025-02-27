@@ -5,6 +5,7 @@ import { createGroq } from '@ai-sdk/groq';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { customProvider, type LanguageModelV1, extractReasoningMiddleware, wrapLanguageModel } from 'ai';
 import { config } from "dotenv";
+import { LucideMessageCircleQuestion } from 'lucide-react';
 
 config({ path: ".env" });
 
@@ -33,6 +34,11 @@ const MODEL_PROVIDERS = {
             "include_reasoning": true,
         }
     }),
+    // "openrouter": createOpenAI({
+    //     baseURL: "https://openrouter.ai/api/v1",
+    //     apiKey: process.env.OPENROUTER_API_KEY,
+    //     compatibility: "compatible"
+    // }),
     "groq": createGroq({
         apiKey: process.env.GROQ_API_KEY,
     }),
@@ -70,7 +76,9 @@ export const MODEL_DATA = [
         name: "Deepseek R1 distill llama",
         icon: "deepseek",
         model: MODEL_PROVIDERS.openrouter("deepseek/deepseek-r1-distill-llama-70b:free"),
+        // model: MODEL_PROVIDERS.openrouter("meta-llama/llama-3.3-70b-instruct:free"),
         provider: "openrouter",
+        disabled: true,
     },
     {
         id: "glm-4-flash",

@@ -44,12 +44,15 @@ interface message {
 export async function createNewSession(
   userId: string,
   initialMessage: message,
+  sessionId?: string,
 ) {
-  const sessionId = crypto.randomUUID();
+  if (!sessionId) {
+    sessionId = crypto.randomUUID();
+  }
   await db.insert(sessions).values({
     sessionId: sessionId,
     userId: userId,
-    sessionTitle: "New Chat",
+    sessionTitle: initialMessage.content,
   });
   initialMessage.sessionId = sessionId;
   await saveMessage(initialMessage);

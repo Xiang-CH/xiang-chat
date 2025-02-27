@@ -10,7 +10,6 @@ type MessageAnnotation = {
   model: Model;
 };
 import EmptySession from "~/components/empty-session";
-import { createNewSession } from "~/lib/actions";
 import { MessageReasoning } from "~/components/message-reasoning";
 import { Markdown } from "./markdown";
 import { useRouter, usePathname } from "next/navigation";
@@ -18,6 +17,7 @@ import { generateUUID } from "~/lib/utils";
 import PulseLoader from "react-spinners/PulseLoader";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
+import { set } from "zod";
 
 export default function ChatArea({
   sessionId,
@@ -27,11 +27,11 @@ export default function ChatArea({
   const router = useRouter();
   const currentRoute = usePathname()
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const [userScrolled, setUserScrolled] = useState(false);
   const [userSubmitted, setUserSubmitted] = useState(false);
   const [model, setModel] = useState<Model | undefined>(sessionId? undefined : MODELS[0]);
-  const [titleRefreshed, setTitleRefreshed] = useState(false);
-  const { input, handleInputChange, handleSubmit, messages, setMessages, isLoading, stop, append } =
+  const [scrolled, setScrolled] = useState(false);
+  // const [titleRefreshed, setTitleRefreshed] = useState(false);
+  const { id, input, handleInputChange, handleSubmit, messages, setMessages, isLoading, stop, append } =
     useChat({
       id: sessionId, // use the provided chat ID
       sendExtraMessageFields: true, // send id and createdAt for each message
@@ -39,7 +39,9 @@ export default function ChatArea({
         return generateUUID();
       },
       onError(error) {
-        return toast.error(error.message);
+        if (error instanceof Error) {
+          return toast.error(error.message);
+        }
       },
       experimental_prepareRequestBody: ({ messages, id }) => {
         const lastMessage = messages[messages.length - 1];
@@ -47,7 +49,9 @@ export default function ChatArea({
         if (!lastMessage) return [];
 
         if (lastMessage.annotations) {
-          lastMessage.annotations.push({ model: model ?? MODELS[0] });
+          if (lastMessage.annotations.length == 0){
+            lastMessage.annotations.push({ model: model ?? MODELS[0] });
+          }
         } else {
           lastMessage.annotations = [{ model: model ?? MODELS[0]}];
         }
@@ -62,13 +66,9 @@ export default function ChatArea({
   async function customHandleSubmit() {
     if (!model) return;
     if (!input) return;
-    if (!sessionId) {
-      sessionId = await createNewSession(input, model);
-      router.push(`/chat/${sessionId}`);
-      return;
-    }
-    setUserScrolled(false);
+
     setUserSubmitted(true);
+    setScrolled(false);
     handleSubmit();
   }
 
@@ -90,6 +90,11 @@ export default function ChatArea({
               return;
             }
 
+            setModel(
+              (initialMessages[initialMessages.length - 1]
+                ?.annotations as MessageAnnotation[])?.[0]?.model ?? MODELS[0],
+            );
+
             if (initialMessages[initialMessages.length - 1]?.role === "user") {
               const lastMessage = initialMessages[initialMessages.length - 1];
               setMessages(initialMessages.slice(0, -1));
@@ -100,11 +105,6 @@ export default function ChatArea({
               setMessages(initialMessages);
             }
 
-            setModel(
-              (initialMessages[initialMessages.length - 1]
-                ?.annotations as MessageAnnotation[])?.[0]?.model ?? MODELS[0],
-            );
-
             scrollToBottom();
         })();
     } catch (error) {
@@ -112,33 +112,48 @@ export default function ChatArea({
         router.push('/chat')
         return;
     }
+
   }, []);
+
+  useEffect(() => {
+    if (userSubmitted && id) {
+      window.history.pushState({}, '', `/chat/${id}`);
+    }
+  }, [id, userSubmitted]);
 
   // Auto scroll to bottom only if the user hasn't scrolled away
   const scrollToBottom = () => {
-    if (!userScrolled && chatContainerRef.current) {
+    if (chatContainerRef.current) {
       chatContainerRef.current.scrollIntoView({
         behavior: "instant",
         block: "end",
       });
     }
+    if (chatContainerRef.current) {
+      chatContainerRef.current.style.opacity = "1";
+    }
   };
 
   useEffect(() => {
-    if (messages.length == 2 && !titleRefreshed) {
-      router.refresh();
-      setTitleRefreshed(true);
-      console.log("refreshed");
+    console.log(messages)
+    // if (messages.length == 2 && !isLoading) {
+    //   router.push(`/chat/${id}`);
+    //   // router.refresh();
+    //   setTitleRefreshed(true);
+    //   console.log("refreshed");
+    // }
+    if (chatContainerRef.current) {
+      chatContainerRef.current.style.opacity = "1";
     }
 
     setTimeout(() => {
-      if (userSubmitted && messages.length > 0 && !userScrolled) {
+      if (userSubmitted && messages.length > 0) {
         const elements = chatContainerRef.current?.children;
         console.log(elements);
 
         const reverseIndex =
           messages[messages.length - 1]?.role == "assistant" ? 3 : 2;
-        if (elements && elements.length >= reverseIndex) {
+        if (elements && elements.length >= reverseIndex && !scrolled) {
           const secondToLastElement = elements[
             elements.length - reverseIndex
           ] as HTMLElement;
@@ -147,20 +162,20 @@ export default function ChatArea({
             block: "start",
             inline: "nearest",
           });
-          if (reverseIndex == 3) setUserScrolled(true);
+          if (reverseIndex == 3) setScrolled(true);
         }
       }
-    }, 100);
+    }, 10);
   }, [messages]);
 
   return (
     // <ScrollArea>
     <div className="flex h-full min-h-[100dvh] w-full flex-col items-center justify-between">
-      {!sessionId ? (
+      {!sessionId && messages.length == 0 ? (
         <EmptySession />
       ) : (
         <div
-          className="flex h-full w-full max-w-[50rem] flex-col gap-4 px-4"
+          className="flex h-full w-full max-w-[50rem] flex-col gap-4 px-4 opacity-0 animate-fade-in"
           ref={chatContainerRef}
         >
           <div className="h-8"></div>

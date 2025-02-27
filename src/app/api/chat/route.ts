@@ -5,7 +5,7 @@ import {
   type Message,
 } from "ai";
 import { saveMessage } from "~/lib/message-store";
-import { updateSessionTitle } from "~/lib/session-store";
+import { createNewSession } from "~/lib/session-store";
 import { config } from "dotenv";
 import { auth } from "@clerk/nextjs/server";
 import { myProvider, DEFAULT_MODEL, type Model } from "~/lib/models";
@@ -15,34 +15,42 @@ config({ path: ".env" });
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
+
   const { messages, id } = (await req.json()) as {
     messages: Message[];
     id: string;
   };
 
+  console.log("messages_id", id);
+
   const { userId } = await auth();
-  if (!userId) return;
+  if (!userId) return new Response("Unauthorized", { status: 401 });
 
   const lastMessage = messages[messages.length - 1];
+
+  if (!lastMessage) return new Response("No message", { status: 400 });
+
   const annotations =
     (lastMessage?.annotations as { model: string; sessionId: string }[]) || [];
-  // console.log(annotations)
 
   const modelName =
     (annotations[0]?.model as Model) ?? (DEFAULT_MODEL as Model);
+  console.log(modelName)
   const model = myProvider.languageModel(modelName);
 
-  if (messages.length > 1) {
-    await saveMessage({
-      messageId: lastMessage?.id ?? "",
-      sessionId: id,
-      content: lastMessage?.content ?? "",
-      contentReasoning: null,
-      role: lastMessage?.role ?? "user",
-      model: modelName,
-    });
+  const lastMessageFormatted = {
+    messageId: lastMessage?.id ?? "",
+    sessionId: id,
+    content: lastMessage?.content ?? "",
+    contentReasoning: null,
+    role: lastMessage?.role ?? "user",
+    model: modelName,
+  }
+
+  if (messages.length == 1) {
+    await createNewSession(userId, lastMessageFormatted, id);
   } else {
-    await updateSessionTitle(id, lastMessage?.content ?? "New Chat");
+    await saveMessage(lastMessageFormatted);
   }
 
   return createDataStreamResponse({
@@ -72,6 +80,7 @@ export async function POST(req: Request) {
 
       result.mergeIntoDataStream(dataStream, {
         sendReasoning: true,
+        sendUsage: true,
       });
     },
     onError: (error) => {

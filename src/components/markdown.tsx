@@ -2,7 +2,12 @@ import Link from 'next/link';
 import React, { memo } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
 import { CodeBlock } from './code-block';
+
+// import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
+// import {dark} from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 const components: Partial<Components> = {
   // @ts-expect-error - `node` is not used
@@ -93,11 +98,11 @@ const components: Partial<Components> = {
   },
 };
 
-const remarkPlugins = [remarkGfm];
+const remarkPlugins = [remarkGfm, remarkMath];
 
 const NonMemoizedMarkdown = ({ children }: { children: string }) => {
   return (
-    <ReactMarkdown remarkPlugins={remarkPlugins} components={components}>
+    <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={[rehypeKatex]} components={components}>
       {children}
     </ReactMarkdown>
   );

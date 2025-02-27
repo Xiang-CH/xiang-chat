@@ -42,7 +42,10 @@ export function SidebarTab({
     e.preventDefault();
     setIsActive(true);
     setOpenMobile(false);
-    router.push(`/chat/${conversation.sessionId}`);
+    router.refresh();
+    setTimeout(() => {
+      router.push(`/chat/${conversation.sessionId}`);
+    }, 200);
   };
 
   useEffect(() => {
@@ -157,6 +160,35 @@ export function NewChatButton() {
         New Chat
       </Button>
     </Link>
+  );
+}
+
+export function NewSessionTab({sessions}: { sessions: { sessionId: string }[] }) {
+  const { setOpenMobile } = useSidebar();
+  const currentPath = usePathname();
+
+  if (currentPath == "/chat") {
+    return null;
+  }
+
+  const currentSessionId = currentPath.split("/")[2];
+
+  if (sessions.find((s) => s.sessionId == currentSessionId)) {
+    return null;
+  }
+
+  return (
+    <SidebarMenuButton
+      asChild
+      isActive={true}
+      className="cursor-pointer hover:bg-muted hover:text-foreground hover:last:opacity-100"
+    >
+      <div className="w-full overflow-hidden text-ellipsis text-nowrap rounded-md px-3 py-1.5 text-[0.9rem] text-muted-foreground" onClick={() => setOpenMobile(false)}>
+        <span>
+          {"new chat"}
+        </span>
+      </div>
+    </SidebarMenuButton>
   );
 }
 
