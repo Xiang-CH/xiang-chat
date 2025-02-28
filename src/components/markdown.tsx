@@ -15,7 +15,7 @@ const components: Partial<Components> = {
   pre: ({ children }) => <>{children}</>,
   ol: ({ node, children, ...props }) => {
     return (
-      <ol className="list-decimal list-outside ml-4" {...props}>
+      <ol className="list-decimal list-outside ml-8" {...props}>
         {children}
       </ol>
     );
@@ -29,7 +29,7 @@ const components: Partial<Components> = {
   },
   ul: ({ node, children, ...props }) => {
     return (
-      <ul className="list-decimal list-outside ml-4" {...props}>
+      <ul className="list-decimal list-outside ml-8" {...props}>
         {children}
       </ul>
     );
@@ -102,9 +102,11 @@ const remarkPlugins = [remarkGfm, remarkMath];
 
 const NonMemoizedMarkdown = ({ children }: { children: string }) => {
   return (
-    <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={[rehypeKatex]} components={components}>
-      {children}
-    </ReactMarkdown>
+    <div className="ml-1">
+      <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={[rehypeKatex]} components={components}>
+        {children}
+      </ReactMarkdown>
+    </div>
   );
 };
 

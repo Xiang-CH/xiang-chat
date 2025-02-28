@@ -153,13 +153,22 @@ export function SidebarTab({
 
 export function NewChatButton() {
   const { setOpenMobile } = useSidebar();
+  const router = useRouter();
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setOpenMobile(false)
+    router.refresh();
+    setTimeout(() => {
+      router.push(`/chat`);
+    }, 200);
+  };
 
   return (
-    <Link href="/chat" className="w-full" onClick={() => setOpenMobile(false)}>
-      <Button variant="outline" className="w-full shadow-none">
+    <div className="w-full">
+      <Button variant="outline" className="w-full shadow-none" onClick={handleClick}>
         New Chat
       </Button>
-    </Link>
+    </div>
   );
 }
 

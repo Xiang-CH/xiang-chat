@@ -17,7 +17,6 @@ import { generateUUID } from "~/lib/utils";
 import PulseLoader from "react-spinners/PulseLoader";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
-import { set } from "zod";
 
 export default function ChatArea({
   sessionId,
@@ -67,9 +66,22 @@ export default function ChatArea({
     if (!model) return;
     if (!input) return;
 
-    setUserSubmitted(true);
-    setScrolled(false);
-    handleSubmit();
+    if (!sessionId) {
+      const sessionId = generateUUID();
+      const tempMsg = {
+        id: generateUUID(),
+        role: "user",
+        content: input,
+        annotations: [{ model: model }],
+      } as Message;
+      localStorage.setItem(`newMessage_${sessionId}`, JSON.stringify(tempMsg));
+      router.push(`/chat/${sessionId}`, { scroll: false })
+      return
+    } else {
+      setUserSubmitted(true);
+      setScrolled(false);
+      handleSubmit();
+    }
   }
 
   useEffect(() => {
@@ -80,6 +92,16 @@ export default function ChatArea({
     if (!sessionId) {
       router.push('/chat')
       return;
+    }
+
+    const initialInput = localStorage.getItem(`newMessage_${sessionId}`);
+    if (initialInput) {
+      const initialMessage = JSON.parse(initialInput) as Message;
+      append(initialMessage);
+      setModel((initialMessage.annotations?.[0] as MessageAnnotation)?.model);
+      localStorage.removeItem(`newMessage_${sessionId}`);
+      scrollToBottom();
+      return
     }
 
     try {
@@ -115,12 +137,6 @@ export default function ChatArea({
 
   }, []);
 
-  useEffect(() => {
-    if (userSubmitted && id) {
-      window.history.pushState({}, '', `/chat/${id}`);
-    }
-  }, [id, userSubmitted]);
-
   // Auto scroll to bottom only if the user hasn't scrolled away
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -129,22 +145,23 @@ export default function ChatArea({
         block: "end",
       });
     }
-    if (chatContainerRef.current) {
-      chatContainerRef.current.style.opacity = "1";
-    }
+
+    setTimeout(()=>{
+      if (chatContainerRef.current) {
+        chatContainerRef.current.style.opacity = "1";
+      }
+    }, 1)
   };
 
   useEffect(() => {
     console.log(messages)
-    // if (messages.length == 2 && !isLoading) {
-    //   router.push(`/chat/${id}`);
-    //   // router.refresh();
-    //   setTitleRefreshed(true);
-    //   console.log("refreshed");
-    // }
-    if (chatContainerRef.current) {
-      chatContainerRef.current.style.opacity = "1";
+    if (messages.length == 2 && !isLoading) {
+      router.refresh();
+      console.log("refreshed");
     }
+    // if (chatContainerRef.current) {
+    //   chatContainerRef.current.style.opacity = "1";
+    // }
 
     setTimeout(() => {
       if (userSubmitted && messages.length > 0) {
@@ -166,16 +183,16 @@ export default function ChatArea({
         }
       }
     }, 10);
-  }, [messages]);
+  }, [messages, isLoading]);
 
   return (
     // <ScrollArea>
     <div className="flex h-full min-h-[100dvh] w-full flex-col items-center justify-between">
       {!sessionId && messages.length == 0 ? (
         <EmptySession />
-      ) : (
+      ) : messages.length == 0? (<Loading/>):(
         <div
-          className="flex h-full w-full max-w-[50rem] flex-col gap-4 px-4 opacity-0 animate-fade-in"
+          className="flex h-full w-full max-w-[50rem] flex-col gap-4 px-4 opacity-0"
           ref={chatContainerRef}
         >
           <div className="h-8"></div>
@@ -195,7 +212,7 @@ export default function ChatArea({
                   </div>
                 </div>
               ) : (
-                <div>
+                <div className="px-1">
                   {m.parts.map((p, index) => {
                     if (p.type === "text") {
                       return (
@@ -268,4 +285,13 @@ export default function ChatArea({
     </div>
     // </ScrollArea>
   );
+}
+
+
+function Loading() {
+  return (
+      <div className="flex items-center justify-center h-[100dvh] w-full">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+  )
 }

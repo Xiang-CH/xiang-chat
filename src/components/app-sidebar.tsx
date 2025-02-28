@@ -26,7 +26,7 @@ export async function AppSidebar(): Promise<JSX.Element> {
 			<SidebarContent className="relative max-w-full">
 		
 				<ScrollArea className="h-full w-full relative">
-					<SidebarGroup className="flex max-w-[16rem] flex-col px-4 gap-[2px]">
+					<SidebarGroup className="flex max-w-[18rem] md:max-w-[16rem] flex-col px-4 gap-[2px]">
 						<NewSessionTab sessions={conversations}/>
 						{conversations.map((conversation) => (
 							<SidebarTab conversation={conversation} key={conversation.sessionId}/>
