@@ -30,7 +30,7 @@ export default function ChatArea({
   const [model, setModel] = useState<Model | undefined>(sessionId? undefined : MODELS[0]);
   const [scrolled, setScrolled] = useState(false);
   // const [titleRefreshed, setTitleRefreshed] = useState(false);
-  const { id, input, handleInputChange, handleSubmit, messages, setMessages, isLoading, stop, append } =
+  const { input, handleInputChange, handleSubmit, messages, setMessages, isLoading, stop, append } =
     useChat({
       id: sessionId, // use the provided chat ID
       sendExtraMessageFields: true, // send id and createdAt for each message
@@ -97,11 +97,13 @@ export default function ChatArea({
     const initialInput = localStorage.getItem(`newMessage_${sessionId}`);
     if (initialInput) {
       const initialMessage = JSON.parse(initialInput) as Message;
-      append(initialMessage);
-      setModel((initialMessage.annotations?.[0] as MessageAnnotation)?.model);
-      localStorage.removeItem(`newMessage_${sessionId}`);
-      scrollToBottom();
-      return
+      void (async () => {
+        await append(initialMessage);
+        setModel((initialMessage.annotations?.[0] as MessageAnnotation)?.model);
+        localStorage.removeItem(`newMessage_${sessionId}`);
+        scrollToBottom();
+      })();
+      return;
     }
 
     try {

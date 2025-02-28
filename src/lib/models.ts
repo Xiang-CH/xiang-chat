@@ -5,7 +5,6 @@ import { createGroq } from '@ai-sdk/groq';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { customProvider, type LanguageModelV1, extractReasoningMiddleware, wrapLanguageModel } from 'ai';
 import { config } from "dotenv";
-import { LucideMessageCircleQuestion } from 'lucide-react';
 
 config({ path: ".env" });
 
