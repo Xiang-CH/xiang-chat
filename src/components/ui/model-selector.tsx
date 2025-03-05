@@ -21,7 +21,7 @@ export function ModelSelector({
 }: ModelSelectorProps) {
   return (
     <Select value={value} onValueChange={onChange} {...props}>
-      <SelectTrigger className="nodrag w-full border-none py-0 shadow-none focus:ring-0">
+      <SelectTrigger className="h-6 nodrag w-full border-none py-0 shadow-none focus:ring-0">
         <SelectValue placeholder="Select model" />
       </SelectTrigger>
       <SelectContent>

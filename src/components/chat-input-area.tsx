@@ -51,7 +51,7 @@ function ChatInputArea({
               placeholder="Type a message..."
               disabled={!isSignedIn}
             />
-            <div className="flex w-full items-center justify-between">
+            <div className="flex w-full items-end justify-between">
               <div>
                 <ModelSelector
                   value={model}

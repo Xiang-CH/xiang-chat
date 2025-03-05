@@ -68,7 +68,7 @@ export function SidebarTab({
       key={conversation.sessionId}
       className="cursor-pointer hover:bg-muted hover:text-foreground hover:last:opacity-100"
     >
-      <div className="group flex w-full justify-between">
+      <div className="session-tab flex w-full justify-between">
         {renameTab ? (
           <>
             <input
@@ -97,7 +97,7 @@ export function SidebarTab({
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger
-                className={`flex h-4 w-6 items-center justify-center rounded-full opacity-0 transition-opacity hover:bg-gray-300 group-hover:opacity-100`}
+                className="flex h-4 w-6 items-center justify-center rounded-full opacity-0 transition-opacity hover:bg-gray-300 [.session-tab:hover_&]:opacity-100 text-muted-foreground"
               >
                 <TabOptionsIcon />
               </DropdownMenuTrigger>
