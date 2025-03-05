@@ -1,6 +1,7 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { createDeepSeek } from '@ai-sdk/deepseek';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { createZhipu } from 'zhipu-ai-provider';
 import { createGroq } from '@ai-sdk/groq';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { customProvider, type LanguageModelV1, extractReasoningMiddleware, wrapLanguageModel } from 'ai';
@@ -8,7 +9,7 @@ import { config } from "dotenv";
 
 config({ path: ".env" });
 
-export const MODELS = ["groq/deepseek-r1-distill-qwen-32b", "openrouter/deepseek-r1-llama-70b", "glm-4-flash", "qwen2.5-vl-72b"] as const;
+export const MODELS = ["glm-4-plus", "groq/deepseek-r1-distill-qwen-32b", "openrouter/deepseek-r1-llama-70b", "glm-4-flash", "qwen2.5-vl-72b"] as const;
 export type Model = typeof MODELS[number];
 export const DEFAULT_MODEL = MODELS[0];
 
@@ -16,8 +17,7 @@ export const MODEL_ICONS = ["deepseek", "zhipu", "openai", "groq", "qwen", "gemi
 export type ModelIcon = typeof MODEL_ICONS[number];
 
 const MODEL_PROVIDERS = {
-    "zhipu": createOpenAI({
-        baseURL: "https://open.bigmodel.cn/api/paas/v4/",
+    "zhipu": createZhipu({
         apiKey: process.env.ZHIPU_API_KEY,
     }),
     // openai: createOpenAI({
@@ -51,10 +51,16 @@ export type Provider = ReturnType<typeof createOpenAI> | ReturnType<typeof creat
 
 export const MODEL_DATA = [
     {
+        id: "glm-4-plus",
+        name: 'GLM 4 Plus',
+        icon: "zhipu",
+        model: MODEL_PROVIDERS.zhipu("glm-4-plus"),
+        provider: "zhipu",
+    },
+    {
         id: "groq/deepseek-r1-distill-qwen-32b",
         name: "Deepseek R1 distill Qwen",
         icon: "deepseek",
-        // model: MODEL_PROVIDERS.groq("deepseek-r1-distill-qwen-32b"),
         model: wrapLanguageModel({
             model: MODEL_PROVIDERS.groq("deepseek-r1-distill-qwen-32b") as LanguageModelV1,
             middleware: extractReasoningMiddleware({
@@ -77,7 +83,7 @@ export const MODEL_DATA = [
         model: MODEL_PROVIDERS.openrouter("deepseek/deepseek-r1-distill-llama-70b:free"),
         // model: MODEL_PROVIDERS.openrouter("meta-llama/llama-3.3-70b-instruct:free"),
         provider: "openrouter",
-        disabled: true,
+        // disabled: true,
     },
     {
         id: "glm-4-flash",
