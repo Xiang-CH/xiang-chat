@@ -1,6 +1,6 @@
 "use client";
 import { type Message, useChat } from "@ai-sdk/react";
-import { loadChat } from '~/lib/actions';
+import { loadChat } from "~/lib/actions";
 import { ChatInputArea } from "~/components/chat-input-area";
 import { useEffect, useRef, useState } from "react";
 import { type Model, MODELS } from "~/lib/models";
@@ -24,43 +24,53 @@ export default function ChatArea({
   sessionId?: string | undefined;
 } = {}) {
   const router = useRouter();
-  const currentRoute = usePathname()
+  const currentRoute = usePathname();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [userSubmitted, setUserSubmitted] = useState(false);
-  const [model, setModel] = useState<Model | undefined>(sessionId? undefined : MODELS[0]);
+  const [model, setModel] = useState<Model | undefined>(
+    sessionId ? undefined : MODELS[0],
+  );
   const [scrolled, setScrolled] = useState(false);
   // const [titleRefreshed, setTitleRefreshed] = useState(false);
-  const { input, handleInputChange, handleSubmit, messages, setMessages, isLoading, stop, append } =
-    useChat({
-      id: sessionId, // use the provided chat ID
-      sendExtraMessageFields: true, // send id and createdAt for each message
-      generateId: () => {
-        return generateUUID();
-      },
-      onError(error) {
-        if (error instanceof Error) {
-          return toast.error(error.message);
+  const {
+    input,
+    handleInputChange,
+    handleSubmit,
+    messages,
+    setMessages,
+    isLoading,
+    stop,
+    append,
+  } = useChat({
+    id: sessionId, // use the provided chat ID
+    sendExtraMessageFields: true, // send id and createdAt for each message
+    generateId: () => {
+      return generateUUID();
+    },
+    onError(error) {
+      if (error instanceof Error) {
+        return toast.error(error.message);
+      }
+    },
+    experimental_prepareRequestBody: ({ messages, id }) => {
+      const lastMessage = messages[messages.length - 1];
+
+      if (!lastMessage) return [];
+
+      if (lastMessage.annotations) {
+        if (lastMessage.annotations.length == 0) {
+          lastMessage.annotations.push({ model: model ?? MODELS[0] });
         }
-      },
-      experimental_prepareRequestBody: ({ messages, id }) => {
-        const lastMessage = messages[messages.length - 1];
+      } else {
+        lastMessage.annotations = [{ model: model ?? MODELS[0] }];
+      }
 
-        if (!lastMessage) return [];
-
-        if (lastMessage.annotations) {
-          if (lastMessage.annotations.length == 0){
-            lastMessage.annotations.push({ model: model ?? MODELS[0] });
-          }
-        } else {
-          lastMessage.annotations = [{ model: model ?? MODELS[0]}];
-        }
-
-        return { id: id, messages: messages } as {
-          id: string;
-          messages: Message[];
-        };
-      },
-    });
+      return { id: id, messages: messages } as {
+        id: string;
+        messages: Message[];
+      };
+    },
+  });
 
   async function customHandleSubmit() {
     if (!model) return;
@@ -75,8 +85,8 @@ export default function ChatArea({
         annotations: [{ model: model }],
       } as Message;
       localStorage.setItem(`newMessage_${sessionId}`, JSON.stringify(tempMsg));
-      router.push(`/chat/${sessionId}`, { scroll: false })
-      return
+      router.push(`/chat/${sessionId}`, { scroll: false });
+      return;
     } else {
       setUserSubmitted(true);
       setScrolled(false);
@@ -90,7 +100,7 @@ export default function ChatArea({
     }
 
     if (!sessionId) {
-      router.push('/chat')
+      router.push("/chat");
       return;
     }
 
@@ -98,45 +108,50 @@ export default function ChatArea({
     if (initialInput) {
       const initialMessage = JSON.parse(initialInput) as Message;
       void (async () => {
-        await append(initialMessage);
         setModel((initialMessage.annotations?.[0] as MessageAnnotation)?.model);
-        localStorage.removeItem(`newMessage_${sessionId}`);
         scrollToBottom();
+        await append(initialMessage);
+        localStorage.removeItem(`newMessage_${sessionId}`);
       })();
       return;
     }
 
     try {
-        void (async () => {
-          const initialMessages = await loadChat(sessionId);
-            if (!initialMessages || initialMessages.length == 0) {
-              router.push('/chat')
-              return;
-            }
+      void (async () => {
+        const initialMessages = await loadChat(sessionId);
+        if (!initialMessages || initialMessages.length == 0) {
+          router.push("/chat");
+          return;
+        }
 
-            setModel(
-              (initialMessages[initialMessages.length - 1]
-                ?.annotations as MessageAnnotation[])?.[0]?.model ?? MODELS[0],
-            );
+        setModel(
+          (
+            initialMessages[initialMessages.length - 1]
+              ?.annotations as MessageAnnotation[]
+          )?.[0]?.model ?? MODELS[0],
+        );
 
-            if (initialMessages[initialMessages.length - 1]?.role === "user") {
-              const lastMessage = initialMessages[initialMessages.length - 1];
-              setMessages(initialMessages.slice(0, -1));
-              if (lastMessage) {
-                await append(lastMessage);
-              }
-            } else {
-              setMessages(initialMessages);
-            }
+        if (initialMessages[initialMessages.length - 1]?.role === "user") {
+          const lastMessage = initialMessages[initialMessages.length - 1];
+          setMessages(initialMessages.slice(0, -1));
+          if (lastMessage) {
+            await append(lastMessage);
+          }
+        } else {
+          console.log(initialMessages);
+          setMessages(initialMessages);
+        }
 
-            scrollToBottom();
-        })();
+        setTimeout(() => {
+          scrollToBottom();
+        }, 1);
+
+      })();
     } catch (error) {
-        console.error(error);
-        router.push('/chat')
-        return;
+      console.error(error);
+      router.push("/chat");
+      return;
     }
-
   }, []);
 
   // Auto scroll to bottom only if the user hasn't scrolled away
@@ -148,15 +163,14 @@ export default function ChatArea({
       });
     }
 
-    setTimeout(()=>{
+    setTimeout(() => {
       if (chatContainerRef.current) {
         chatContainerRef.current.style.opacity = "1";
       }
-    }, 1)
+    }, 1);
   };
 
   useEffect(() => {
-    console.log(messages)
     if (messages.length == 2 && !isLoading) {
       router.refresh();
       console.log("refreshed");
@@ -164,9 +178,8 @@ export default function ChatArea({
     // if (chatContainerRef.current) {
     //   chatContainerRef.current.style.opacity = "1";
     // }
-
-    setTimeout(() => {
-      if (userSubmitted && messages.length > 0) {
+    if (userSubmitted && messages.length > 0) {
+      setTimeout(() => {
         const elements = chatContainerRef.current?.children;
         console.log(elements);
 
@@ -183,8 +196,8 @@ export default function ChatArea({
           });
           if (reverseIndex == 3) setScrolled(true);
         }
-      }
-    }, 10);
+      }, 10);
+    }
   }, [messages, isLoading]);
 
   return (
@@ -192,9 +205,11 @@ export default function ChatArea({
     <div className="flex h-full min-h-[100dvh] w-full flex-col items-center justify-between">
       {!sessionId && messages.length == 0 ? (
         <EmptySession />
-      ) : messages.length == 0? (<Loading/>):(
+      ) : messages.length == 0 ? (
+        <Loading />
+      ) : (
         <div
-          className="flex h-full w-full max-w-[50rem] flex-col gap-4 px-4 opacity-0"
+          className="flex h-full w-full max-w-[50rem] flex-col gap-4 px-4 opacity-0 transition-opacity duration-100 ease-in-out"
           ref={chatContainerRef}
         >
           <div className="h-8"></div>
@@ -244,13 +259,13 @@ export default function ChatArea({
 
                   {/* Generated by + Copy Button */}
                   <div
-                    className={`flex h-8 gap-2 items-center text-xs transition-all ${messageIndex == messages.length - 1 ? "opacity-50" : "opacity-0 hover:opacity-50"}`}
+                    className={`flex h-8 items-center gap-2 text-xs transition-all ${messageIndex == messages.length - 1 ? "opacity-50" : "opacity-0 hover:opacity-50"}`}
                   >
                     <Button
                       variant="ghost"
                       size="icon"
                       className="h-6 w-6"
-                      onClick={async() => {
+                      onClick={async () => {
                         const text = m.parts
                           .filter((p) => p.type === "text")
                           .map((p) => p.text)
@@ -289,11 +304,10 @@ export default function ChatArea({
   );
 }
 
-
 function Loading() {
   return (
-      <div className="flex items-center justify-center h-[100dvh] w-full">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-      </div>
-  )
+    <div className="flex h-[100dvh] w-full items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
+    </div>
+  );
 }
