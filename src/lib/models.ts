@@ -9,7 +9,7 @@ import { config } from "dotenv";
 
 config({ path: ".env" });
 
-export const MODELS = ["glm-4-plus", "groq/deepseek-r1-distill-qwen-32b", "openrouter/deepseek-r1-llama-70b", "glm-4-flash", "qwen2.5-vl-72b"] as const;
+export const MODELS = ["groq/qwen-qwq-32b", "groq/deepseek-r1-distill-qwen-32b", "openrouter/deepseek-r1-llama-70b", "glm-4-plus", "glm-4-flash", "qwen2.5-vl-72b"] as const;
 export type Model = typeof MODELS[number];
 export const DEFAULT_MODEL = MODELS[0];
 
@@ -33,11 +33,6 @@ const MODEL_PROVIDERS = {
             "include_reasoning": true,
         }
     }),
-    // "openrouter": createOpenAI({
-    //     baseURL: "https://openrouter.ai/api/v1",
-    //     apiKey: process.env.OPENROUTER_API_KEY,
-    //     compatibility: "compatible"
-    // }),
     "groq": createGroq({
         apiKey: process.env.GROQ_API_KEY,
     }),
@@ -50,6 +45,18 @@ type ProviderName = keyof typeof MODEL_PROVIDERS;
 export type Provider = ReturnType<typeof createOpenAI> | ReturnType<typeof createDeepSeek> | ReturnType<typeof createOpenRouter> | ReturnType<typeof createGroq> | ReturnType<typeof createGoogleGenerativeAI>;
 
 export const MODEL_DATA = [
+    {
+        id: "groq/qwen-qwq-32b",
+        name: "Qwen QwQ",
+        icon: "qwen",
+        model: wrapLanguageModel({
+            model: MODEL_PROVIDERS.groq("qwen-qwq-32b") as LanguageModelV1,
+            middleware: extractReasoningMiddleware({
+                tagName: "think"
+            }),
+          }),
+        provider: "groq",
+    },
     {
         id: "glm-4-plus",
         name: 'GLM 4 Plus',
