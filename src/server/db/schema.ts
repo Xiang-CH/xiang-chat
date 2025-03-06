@@ -44,7 +44,7 @@ export const messages = createTable(
     messageId: uuid("message_id").primaryKey().unique().defaultRandom(),
     sessionId: uuid("session_id").notNull().references(() => sessions.sessionId),
     content: text("content"),
-    contenReasoning: text("content_reasoning"),
+    contentReasoning: text("content_reasoning"),
     role: varchar("role", { length: 256 }),
     model: varchar("model", { length: 256 }),
     createdAt: timestamp("created_at", { withTimezone: true })

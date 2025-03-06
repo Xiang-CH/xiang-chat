@@ -1,6 +1,6 @@
 import { db } from "~/server/db";
 import { sessions } from "~/server/db/schema";
-import { saveMessage, deleteAllMessageBySessionId } from "~/lib/message-store";
+import { deleteAllMessageBySessionId, saveMessages } from "~/lib/message-store";
 import { eq } from "drizzle-orm";
 
 export async function loadSessionsByUserId(userId: string | null) {
@@ -43,7 +43,7 @@ interface message {
 
 export async function createNewSession(
   userId: string,
-  initialMessage: message,
+  initialMessages: message[],
   sessionId?: string,
 ) {
   if (!sessionId) {
@@ -52,10 +52,13 @@ export async function createNewSession(
   await db.insert(sessions).values({
     sessionId: sessionId,
     userId: userId,
-    sessionTitle: initialMessage.content,
+    sessionTitle: initialMessages[0]?.content ?? "Untitled Session",
   });
-  initialMessage.sessionId = sessionId;
-  await saveMessage(initialMessage);
+  
+  initialMessages.forEach((message) => {
+    message.sessionId = sessionId;
+  });
+  await saveMessages(initialMessages);
 }
 
 export async function updateSessionTitle(sessionId: string, title: string) {

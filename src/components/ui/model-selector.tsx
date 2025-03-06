@@ -1,13 +1,15 @@
 import {
   Select,
   SelectContent,
+  SelectGroup,
+  SelectLabel,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
 import type { SelectProps } from "@radix-ui/react-select";
 import type { ElementType, SVGProps } from "react";
-import { MODEL_DATA, type Model, type ModelIcon } from "~/lib/models";
+import { MODEL_DATA, MODELS, type Model, type ModelIcon } from "~/lib/models";
 
 interface ModelSelectorProps extends SelectProps {
   value: Model | undefined;
@@ -19,33 +21,81 @@ export function ModelSelector({
   onChange,
   ...props
 }: ModelSelectorProps) {
+  // const CurrentIcon = value? ModelIcons[MODEL_DATA[value].icon] : <div/>;
+  const CurrentIcon = value ? ModelIcons[MODEL_DATA[value].icon] : null;
+
   return (
     <Select value={value} onValueChange={onChange} {...props}>
-      <SelectTrigger className="h-6 nodrag w-full border-none py-0 shadow-none focus:ring-0">
-        <SelectValue placeholder="Select model" />
+      <SelectTrigger className="nodrag h-6 w-full border-none py-0 shadow-none focus:ring-0">
+        <SelectValue placeholder="Select model">
+          {value && (
+            <div className="flex items-center gap-2">
+              {MODEL_DATA[value] && (
+                <>
+                  {CurrentIcon && <CurrentIcon />}
+                  <span className="text-muted-foreground">{MODEL_DATA[value].name}</span>
+                </>
+              )}
+            </div>
+          )}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
-        {MODEL_DATA.map((model) => {
-          const Icon = ModelIcons[model.icon];
-          return (
-            <SelectItem
-              key={model.id}
-              value={model.id}
-              disabled={model.disabled}
-            >
-              <div className="flex items-center gap-2">
-                <Icon className="h-4 w-4" />
-                <span className="text-muted-foreground">
-                  {model.name} ({model.provider})
-                </span>
-              </div>
-            </SelectItem>
-          );
-        })}
+        {/* Reasoning Models Group */}
+        <SelectGroup>
+          <SelectLabel>Reasoning Models</SelectLabel>
+          <ModelGroup
+            models={MODELS.filter((modelId) => MODEL_DATA[modelId].isReasoning)}
+          />
+        </SelectGroup>
+
+        {/* Non-Reasoning Models Group */}
+        <SelectGroup>
+          <SelectLabel>Non-Reasoning Models</SelectLabel>
+          <ModelGroup
+            models={MODELS.filter(
+              (modelId) => !MODEL_DATA[modelId].isReasoning,
+            )}
+          />
+        </SelectGroup>
       </SelectContent>
     </Select>
   );
 }
+
+const ModelGroup = ({ models }: { models: Model[] }) => {
+  return (
+    <div className="flex flex-col w-full pl-1">
+      {models.map((modelId) => {
+        const model = MODEL_DATA[modelId];
+        const Icon = ModelIcons[model.icon];
+        return (
+          <SelectItem key={model.id} value={model.id} disabled={model.disabled}>
+            <div className="flex items-center justify-between gap-2 w-full">
+              <div className="flex justify-start gap-2 items-center">
+                <Icon className="h-4 w-4" />
+                <span>{model.name}</span>
+                <span className="text-xs text-muted-foreground">
+                  {model.provider}
+                </span>
+              </div>
+              <div className="flex justify-end gap-1 items-center">
+                {model.isVision && (
+                  <span
+                    className="ml-auto text-xs text-muted-foreground"
+                    title="Supports Vision"
+                  >
+                    👁️
+                  </span>
+                )}
+              </div>
+            </div>
+          </SelectItem>
+        );
+      })}
+    </div>
+  );
+};
 
 // Icons obtained from https://svgl.app/
 

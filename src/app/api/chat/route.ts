@@ -4,13 +4,19 @@ import {
   streamText,
   type Message,
 } from "ai";
-import { saveMessage } from "~/lib/message-store";
+import { saveMessages } from "~/lib/message-store";
 import { createNewSession } from "~/lib/session-store";
 import { config } from "dotenv";
 import { auth } from "@clerk/nextjs/server";
-import { myProvider, DEFAULT_MODEL, type Model } from "~/lib/models";
+import { MODEL_DATA, DEFAULT_MODEL, type Model } from "~/lib/models";
+import { ProxyAgent, setGlobalDispatcher } from "undici";
 
 config({ path: ".env" });
+
+if (process.env.HTTP_PROXY) {
+  const proxyAgent = new ProxyAgent(process.env.HTTP_PROXY);
+  setGlobalDispatcher(proxyAgent);
+}
 
 export const maxDuration = 60;
 
@@ -20,8 +26,6 @@ export async function POST(req: Request) {
     messages: Message[];
     id: string;
   };
-
-  console.log("messages_id", id);
 
   const { userId } = await auth();
   if (!userId) return new Response("Unauthorized", { status: 401 });
@@ -33,10 +37,10 @@ export async function POST(req: Request) {
   const annotations =
     (lastMessage?.annotations as { model: string; sessionId: string }[]) || [];
 
-  const modelName =
+  const modelId =
     (annotations[0]?.model as Model) ?? (DEFAULT_MODEL as Model);
-  console.log(modelName)
-  const model = myProvider.languageModel(modelName);
+    
+  const model = MODEL_DATA[modelId].model;
 
   const lastMessageFormatted = {
     messageId: lastMessage?.id ?? "",
@@ -44,18 +48,12 @@ export async function POST(req: Request) {
     content: lastMessage?.content ?? "",
     contentReasoning: null,
     role: lastMessage?.role ?? "user",
-    model: modelName,
-  }
-
-  if (messages.length == 1) {
-    await createNewSession(userId, lastMessageFormatted, id);
-  } else {
-    await saveMessage(lastMessageFormatted);
+    model: modelId,
   }
 
   return createDataStreamResponse({
     execute: (dataStream) => {
-      dataStream.writeMessageAnnotation({ model: modelName });
+      dataStream.writeMessageAnnotation({ model: modelId });
       const result = streamText({
         model: model,
         messages: messages,
@@ -64,17 +62,24 @@ export async function POST(req: Request) {
         // async onError(err) {
         //   console.log("err", err);
         // },
-        async onFinish({ text, reasoning }) {
+        async onFinish({ text, reasoning}) {
           const assistantMessage = {
             messageId: crypto.randomUUID(),
             sessionId: id,
             content: text,
             contentReasoning: reasoning ?? null,
             role: "assistant" as "data" | "system" | "user" | "assistant",
-            model: modelName,
+            model: modelId,
             createdAt: undefined,
           };
-          await saveMessage(assistantMessage);
+
+          console.log("route", assistantMessage)
+
+          if (messages.length == 1) {
+            await createNewSession(userId, [lastMessageFormatted, assistantMessage], id);
+          } else {
+            await saveMessages([lastMessageFormatted, assistantMessage]);
+          }
         },
       });
 
@@ -86,26 +91,6 @@ export async function POST(req: Request) {
     onError: (error) => {
       return "Error: " + JSON.stringify(error);
     },
+
   });
-
-  // const result = streamText({
-  //   model: myProvider.languageModel("aliyun/deepseek-r1-llama-70b"),
-  //   messages: messages,
-  //   temperature: 0.8,
-  //   async onFinish({ text, reasoning }) {
-  //     console.log("reasoning", reasoning)
-  //     const assistantMessage = {
-  //       messageId: crypto.randomUUID(),
-  //       sessionId: id,
-  //       content: text,
-  //       contentReasoning: reasoning ?? null,
-  //       role: 'assistant' as "data" | "system" | "user" | "assistant",
-  //       model: model,
-  //       createdAt: undefined
-  //     }
-  //     await saveMessage(assistantMessage)
-  //   },
-  // });
-
-  // return result.toDataStreamResponse({sendReasoning: true, sendUsage: true});
 }

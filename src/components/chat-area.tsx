@@ -31,7 +31,7 @@ export default function ChatArea({
     sessionId ? undefined : MODELS[0],
   );
   const [scrolled, setScrolled] = useState(false);
-  // const [titleRefreshed, setTitleRefreshed] = useState(false);
+
   const {
     input,
     handleInputChange,
@@ -175,9 +175,7 @@ export default function ChatArea({
       router.refresh();
       console.log("refreshed");
     }
-    // if (chatContainerRef.current) {
-    //   chatContainerRef.current.style.opacity = "1";
-    // }
+
     if (userSubmitted && messages.length > 0) {
       setTimeout(() => {
         const elements = chatContainerRef.current?.children;
@@ -201,11 +199,8 @@ export default function ChatArea({
   }, [messages, isLoading]);
 
   return (
-    // <ScrollArea>
-    <div className="flex h-full min-h-[100dvh] w-full flex-col items-center justify-between">
-      {!sessionId && messages.length == 0 ? (
-        <EmptySession />
-      ) : messages.length == 0 ? (
+    <div className="flex w-full flex-col items-center justify-between">
+      {messages.length == 0 ? (
         <Loading />
       ) : (
         <div
@@ -300,7 +295,6 @@ export default function ChatArea({
         setModel={setModel}
       />
     </div>
-    // </ScrollArea>
   );
 }
 

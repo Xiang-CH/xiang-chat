@@ -44,8 +44,8 @@ type ProviderName = keyof typeof MODEL_PROVIDERS;
 
 export type Provider = ReturnType<typeof createOpenAI> | ReturnType<typeof createDeepSeek> | ReturnType<typeof createOpenRouter> | ReturnType<typeof createGroq> | ReturnType<typeof createGoogleGenerativeAI>;
 
-export const MODEL_DATA = [
-    {
+export const MODEL_DATA = {
+   "groq/qwen-qwq-32b": {
         id: "groq/qwen-qwq-32b",
         name: "Qwen QwQ",
         icon: "qwen",
@@ -56,15 +56,16 @@ export const MODEL_DATA = [
             }),
           }),
         provider: "groq",
+        isReasoning: true,
     },
-    {
+    "glm-4-plus": {
         id: "glm-4-plus",
         name: 'GLM 4 Plus',
         icon: "zhipu",
         model: MODEL_PROVIDERS.zhipu("glm-4-plus"),
         provider: "zhipu",
     },
-    {
+    "groq/deepseek-r1-distill-qwen-32b": {
         id: "groq/deepseek-r1-distill-qwen-32b",
         name: "Deepseek R1 distill Qwen",
         icon: "deepseek",
@@ -75,44 +76,37 @@ export const MODEL_DATA = [
             }),
           }),
         provider: "groq",
+        isReasoning: true,
     },
-    {
+    "gemini-2.0-flash": {
         id: "gemini-2.0-flash",
         name: "Gemini 2.0 Flash",
         icon: "gemini",
         model: MODEL_PROVIDERS.google("gemini-2.0-flash"),
         provider: "google",
     },
-    {
+    "openrouter/deepseek-r1-llama-70b": {
         id: "openrouter/deepseek-r1-llama-70b",
         name: "Deepseek R1 distill llama",
         icon: "deepseek",
         model: MODEL_PROVIDERS.openrouter("deepseek/deepseek-r1-distill-llama-70b:free"),
-        // model: MODEL_PROVIDERS.openrouter("meta-llama/llama-3.3-70b-instruct:free"),
         provider: "openrouter",
+        isReasoning: true,
         // disabled: true,
     },
-    {
+    "glm-4-flash": {
         id: "glm-4-flash",
         name: 'GLM 4 Flash',
         icon: "zhipu",
         model: MODEL_PROVIDERS.zhipu("glm-4-flash"),
         provider: "zhipu",
     },
-    {
+    "qwen2.5-vl-72b": {
         id: "qwen2.5-vl-72b",
         name: 'Qwen 2.5 VL 72b',
         icon: "qwen",
         model: MODEL_PROVIDERS.openrouter("qwen/qwen2.5-vl-72b-instruct:free"),
         provider: "openrouter",
+        isVision: true,
     }
-] as {id: Model, name: string, icon: ModelIcon, model: LanguageModelV1, provider: ProviderName, disabled?: boolean}[];
-
-export function getModelProvider(model: Model): ProviderName {
-    return MODEL_DATA.find(item => item.id === model)!.provider;
-}
-
-
-export const myProvider = customProvider({
-    languageModels: Object.fromEntries(MODEL_DATA.map(item => [item.id, item.model])),
-})
+ } as Record<Model, {id: Model, name: string, icon: ModelIcon, model: LanguageModelV1, provider: ProviderName, disabled?: boolean, isReasoning?: boolean, isVision?:boolean}>;

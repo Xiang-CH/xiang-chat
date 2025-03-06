@@ -1,15 +1,17 @@
 import { ScrollArea } from "~/components/ui/scroll-area";
-import { SidebarTrigger } from "~/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "~/components/ui/sidebar";
+import { AppSidebar } from "~/components/app-sidebar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    // <main className="relative box-border flex min-h-full w-full flex-col">
-    //     <div className="absolute top-0 p-4 z-20">
-    //         <SidebarTrigger className="bg-background"/>
-    //     </div>
-      <ScrollArea>
-        {children}
-      </ScrollArea>
-    // </main>
+    <SidebarProvider className="min-w-screen min-h-full">
+      <AppSidebar />
+      <main className="relative box-border flex min-h-full w-full flex-col">
+        <div className="absolute top-0 z-20 p-4">
+          <SidebarTrigger className="bg-background" />
+        </div>
+        <ScrollArea className="h-full">{children}</ScrollArea>
+      </main>
+    </SidebarProvider>
   );
 }

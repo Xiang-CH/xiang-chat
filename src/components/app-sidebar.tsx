@@ -1,3 +1,11 @@
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
+import { isServerMobile } from "~/lib/server-utils";
+
+import { loadSessionsByUserId } from "~/lib/session-store";
+import { ScrollArea } from "~/components/ui/scroll-area";
+import { Button } from "./ui/button";
+import { SidebarTab, NewChatButton, NewSessionTab } from "./sidebar-buttons";
 import {
   Sidebar,
   SidebarContent,
@@ -5,13 +13,6 @@ import {
   SidebarGroup,
   SidebarHeader,
 } from "~/components/ui/sidebar";
-import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
-import { Button } from "./ui/button";
-import { SidebarTab, NewChatButton, NewSessionTab } from "./sidebar-buttons";
-
-import { loadSessionsByUserId } from "~/lib/session-store";
-import { ScrollArea } from "~/components/ui/scroll-area";
 
 export async function AppSidebar(): Promise<JSX.Element> {
   const { userId } = await auth();
@@ -44,9 +45,13 @@ export async function AppSidebar(): Promise<JSX.Element> {
                 elements: {
                   userButtonBox:
                     "w-full flex items-center justify-center gap-1 flex-row-reverse text-foreground",
+                  userButtonPopupCard: "z-[200]",
+                  userButtonPopoverActionButton: "z-[200]"
                 },
               }}
               showName
+              userProfileMode="navigation"
+              userProfileUrl="/settings"
             />
           </div>
         </SignedIn>

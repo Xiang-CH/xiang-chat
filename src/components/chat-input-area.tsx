@@ -45,7 +45,7 @@ function ChatInputArea({
             onSubmit={handleSubmit}
             loading={isLoading}
             onStop={() => stop()}
-            className="bg-muted focus-within:ring-0"
+            className="bg-muted focus-within:ring-0 rounded-b-none md:rounded-b-2xl"
           >
             <ChatInputTextArea
               placeholder="Type a message..."

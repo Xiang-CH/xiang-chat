@@ -96,6 +96,9 @@ const components: Partial<Components> = {
       </h6>
     );
   },
+  hr: ({ node, children,...props }) => {
+    return <hr className="my-4" {...props} />;
+  },
 };
 
 const remarkPlugins = [remarkGfm, remarkMath];
