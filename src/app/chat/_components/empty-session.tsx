@@ -1,5 +1,5 @@
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
-import { Button } from "./ui/button";
+import { Button } from "~/components/ui/button";
 
 export default function EmptySession() {
   return (

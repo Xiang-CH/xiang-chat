@@ -1,54 +1,60 @@
 "use client";
 
 import { TabsContent } from "~/components/ui/tabs";
+import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "~/components/ui/button";
-import { useClerk } from "@clerk/clerk-react";
+// import { useClerk } from "@clerk/clerk-react";
 import { toast } from "sonner";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-  } from "~/components/ui/dialog";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { useState } from "react";
 
 export default function AccountPage() {
   const { user } = useUser();
-  const clerk = useClerk();
+  // const clerk = useClerk();
   const [newEmail, setNewEmail] = useState("");
 
   const handleAddEmail = () => {
     const email = prompt("Enter your email address");
     if (!email || !user) return;
-    
-    user.createEmailAddress({
-      email: email
-    })
+
+    user
+      .createEmailAddress({
+        email: email,
+      })
       .then(() => {
-        toast.success("Email added successfully. Please check your inbox for verification.");
+        toast.success(
+          "Email added successfully. Please check your inbox for verification.",
+        );
       })
       .catch((error) => {
-        toast.error(error.message || "Failed to add email");
+        if (error instanceof Error){
+          toast.error(error.message);
+        } else {
+          toast.error("Failed to add email");
+        }
       });
   };
 
-
-
   if (!user) return null;
-  
+
   return (
     <TabsContent value="account">
       <div className="flex gap-8">
         <div className="flex flex-col items-center">
-          <img
+          <Image
             src={user.imageUrl}
             className="w-40 rounded-full"
             alt="User Profile Pic"
           />
-          <h4 className="scroll-m-20 text-xl font-semibold tracking-tight mt-4">
+          <h4 className="mt-4 scroll-m-20 text-xl font-semibold tracking-tight">
             {user.fullName}
           </h4>
         </div>
@@ -58,36 +64,36 @@ export default function AccountPage() {
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Email Addresses</h2>
               <Dialog>
-    <DialogTrigger asChild>
-      <Button variant="outline">Add Email</Button>
-    </DialogTrigger>
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle>Add Email Address</DialogTitle>
-      </DialogHeader>
-      <form onSubmit={handleAddEmail} className="space-y-4">
-        <Input
-          type="email"
-          placeholder="Enter your email address"
-          value={newEmail}
-          onChange={(e) => setNewEmail(e.target.value)}
-          required
-        />
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" type="button">
-            Cancel
-          </Button>
-          <Button type="submit">Add Email</Button>
-        </div>
-      </form>
-    </DialogContent>
-  </Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline">Add Email</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add Email Address</DialogTitle>
+                  </DialogHeader>
+                  <form onSubmit={handleAddEmail} className="space-y-4">
+                    <Input
+                      type="email"
+                      placeholder="Enter your email address"
+                      value={newEmail}
+                      onChange={(e) => setNewEmail(e.target.value)}
+                      required
+                    />
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline" type="button">
+                        Cancel
+                      </Button>
+                      <Button type="submit">Add Email</Button>
+                    </div>
+                  </form>
+                </DialogContent>
+              </Dialog>
             </div>
-            
+
             <div className="space-y-2">
               {user.emailAddresses.map((email) => (
-                <div 
-                  key={email.id} 
+                <div
+                  key={email.id}
                   className="flex items-center justify-between rounded-lg border p-3"
                 >
                   <div className="flex items-center gap-2">
@@ -103,14 +109,12 @@ export default function AccountPage() {
                       </span>
                     )}
                   </div>
-                  {user.emailAddresses.length > 1 && email.id !== user.primaryEmailAddressId && (
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                    >
-                      Make Primary
-                    </Button>
-                  )}
+                  {user.emailAddresses.length > 1 &&
+                    email.id !== user.primaryEmailAddressId && (
+                      <Button variant="ghost" size="sm">
+                        Make Primary
+                      </Button>
+                    )}
                 </div>
               ))}
             </div>
@@ -119,15 +123,13 @@ export default function AccountPage() {
           <section className="mt-8 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Connected Accounts</h2>
-              <Button variant="outline">
-                Connect Account
-              </Button>
+              <Button variant="outline">Connect Account</Button>
             </div>
-            
+
             <div className="space-y-2">
               {user.externalAccounts.map((account) => (
-                <div 
-                  key={account.id} 
+                <div
+                  key={account.id}
                   className="flex items-center justify-between rounded-lg border p-3"
                 >
                   <div className="flex items-center gap-2">
@@ -136,10 +138,7 @@ export default function AccountPage() {
                       {account.emailAddress}
                     </span>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                  >
+                  <Button variant="ghost" size="sm">
                     Disconnect
                   </Button>
                 </div>

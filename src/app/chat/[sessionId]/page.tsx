@@ -1,4 +1,4 @@
-import ChatArea  from '~/components/chat-area';
+import ChatArea  from './_components/chat-area';
 import { auth } from '@clerk/nextjs/server';
 import { RedirectToSignIn } from '@clerk/nextjs';
 import { Suspense } from 'react'

@@ -9,14 +9,13 @@ import { CopyIcon } from "@radix-ui/react-icons";
 type MessageAnnotation = {
   model: Model;
 };
-import EmptySession from "~/components/empty-session";
 import { MessageReasoning } from "~/components/message-reasoning";
-import { Markdown } from "./markdown";
+import { Markdown } from "../../../../components/markdown";
 import { useRouter, usePathname } from "next/navigation";
 import { generateUUID } from "~/lib/utils";
 import PulseLoader from "react-spinners/PulseLoader";
 import { toast } from "sonner";
-import { Button } from "./ui/button";
+import { Button } from "../../../../components/ui/button";
 
 export default function ChatArea({
   sessionId,
@@ -76,29 +75,12 @@ export default function ChatArea({
     if (!model) return;
     if (!input) return;
 
-    if (!sessionId) {
-      const sessionId = generateUUID();
-      const tempMsg = {
-        id: generateUUID(),
-        role: "user",
-        content: input,
-        annotations: [{ model: model }],
-      } as Message;
-      localStorage.setItem(`newMessage_${sessionId}`, JSON.stringify(tempMsg));
-      router.push(`/chat/${sessionId}`, { scroll: false });
-      return;
-    } else {
-      setUserSubmitted(true);
-      setScrolled(false);
-      handleSubmit();
-    }
+    setUserSubmitted(true);
+    setScrolled(false);
+    handleSubmit();
   }
 
   useEffect(() => {
-    if (currentRoute == "/chat") {
-      return;
-    }
-
     if (!sessionId) {
       router.push("/chat");
       return;

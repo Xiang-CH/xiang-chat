@@ -4,7 +4,7 @@ import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { createZhipu } from 'zhipu-ai-provider';
 import { createGroq } from '@ai-sdk/groq';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { customProvider, type LanguageModelV1, extractReasoningMiddleware, wrapLanguageModel } from 'ai';
+import { type LanguageModelV1, extractReasoningMiddleware, wrapLanguageModel } from 'ai';
 import { config } from "dotenv";
 
 config({ path: ".env" });

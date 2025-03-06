@@ -5,7 +5,7 @@ import { userAgentFromString } from "next/server";
 export async function isServerMobile() {
   const headersList = headers();
   const userAgent = (await headersList).get("user-agent");
-  const { device } = userAgentFromString(userAgent || undefined);
+  const { device } = userAgentFromString(userAgent ?? undefined);
 
   return device.type === "mobile";
 }
