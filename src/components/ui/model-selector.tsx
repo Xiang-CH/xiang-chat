@@ -33,7 +33,9 @@ export function ModelSelector({
               {MODEL_DATA[value] && (
                 <>
                   {CurrentIcon && <CurrentIcon />}
-                  <span className="text-muted-foreground">{MODEL_DATA[value].name}</span>
+                  <span className="text-muted-foreground">
+                    {MODEL_DATA[value].name}
+                  </span>
                 </>
               )}
             </div>
@@ -65,28 +67,28 @@ export function ModelSelector({
 
 const ModelGroup = ({ models }: { models: Model[] }) => {
   return (
-    <div className="flex flex-col w-full pl-1">
+    <div className="flex w-full flex-col pl-1">
       {models.map((modelId) => {
         const model = MODEL_DATA[modelId];
         const Icon = ModelIcons[model.icon];
         return (
           <SelectItem key={model.id} value={model.id} disabled={model.disabled}>
-            <div className="flex items-center justify-between gap-2 w-full">
-              <div className="flex justify-start gap-2 items-center">
+            <div className="flex min-w-full items-center justify-between gap-2">
+              <div className="flex items-center justify-start gap-2">
                 <Icon className="h-4 w-4" />
                 <span>{model.name}</span>
                 <span className="text-xs text-muted-foreground">
                   {model.provider}
                 </span>
               </div>
-              <div className="flex justify-end gap-1 items-center">
+              <div className="flex items-center justify-end gap-1">
                 {model.isVision && (
-                  <span
-                    className="ml-auto text-xs text-muted-foreground"
+                  <div
+                    className="ml-auto text-muted-foreground inline-block"
                     title="Supports Vision"
                   >
-                    👁️
-                  </span>
+                    <VisionIcon/>
+                  </div>
                 )}
               </div>
             </div>
@@ -218,6 +220,7 @@ const Qwen = (props: SVGProps<SVGSVGElement>) => (
     }}
     viewBox="0 0 24 24"
     width="1em"
+    {...props}
   >
     <title>Qwen</title>
     <defs>
@@ -248,3 +251,28 @@ const ModelIcons: Record<ModelIcon, ElementType> = {
   zhipu: Zhipu,
   gemini: Gemini,
 };
+
+const VisionIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" height="1em" width="1em" {...props}>
+    <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+    <g
+      id="SVGRepo_tracerCarrier"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    ></g>
+    <g id="SVGRepo_iconCarrier">
+      {" "}
+      <path
+        d="M9 4.45962C9.91153 4.16968 10.9104 4 12 4C16.1819 4 19.028 6.49956 20.7251 8.70433C21.575 9.80853 22 10.3606 22 12C22 13.6394 21.575 14.1915 20.7251 15.2957C19.028 17.5004 16.1819 20 12 20C7.81811 20 4.97196 17.5004 3.27489 15.2957C2.42496 14.1915 2 13.6394 2 12C2 10.3606 2.42496 9.80853 3.27489 8.70433C3.75612 8.07914 4.32973 7.43025 5 6.82137"
+        stroke="#1C274C"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      ></path>{" "}
+      <path
+        d="M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z"
+        stroke="#1C274C"
+        strokeWidth="1.5"
+      ></path>{" "}
+    </g>
+  </svg>
+);
