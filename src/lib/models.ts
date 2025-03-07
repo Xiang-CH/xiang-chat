@@ -20,9 +20,9 @@ const MODEL_PROVIDERS = {
     "zhipu": createZhipu({
         apiKey: process.env.ZHIPU_API_KEY,
     }),
-    // openai: createOpenAI({
-    //     apiKey: process.env.OPENAI_API_KEY,
-    // }),
+    "openai": createOpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    }),
     "aliyun": createDeepSeek({
         baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
         apiKey: process.env.DASHSCOPE_API_KEY,

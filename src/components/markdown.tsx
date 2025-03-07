@@ -105,7 +105,7 @@ const remarkPlugins = [remarkGfm, remarkMath];
 
 const NonMemoizedMarkdown = ({ children }: { children: string }) => {
   return (
-    <div className="ml-1">
+    <div>
       <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={[rehypeKatex]} components={components}>
         {children}
       </ReactMarkdown>

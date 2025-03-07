@@ -10,9 +10,14 @@ import { type Metadata } from "next";
 import { Toaster } from "~/components/ui/sonner";
 
 export const metadata: Metadata = {
-  title: "Xiang-Chat",
-  description: "A chat application",
-  icons: [{ rel: "icon", url: "/logo.svg" }],
+  title: "Xiang Chat",
+  description: "A simple Chat App",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Xiang Chat"
+  },
 };
 
 export const dynamic = "force-dynamic";
@@ -27,7 +32,11 @@ export default async function RootLayout({
         className={`${GeistSans.variable}`}
         suppressHydrationWarning
       >
-        <body className="flex max-h-[100dvh] min-h-[100dvh]">
+        <head>
+          <meta name="apple-mobile-web-app-title" content="XiangChat" />
+        </head>
+
+        <body className="flex">
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             {children}
             <Toaster />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+// import { useState } from 'react';
 // import { CodeIcon, LoaderIcon, PlayIcon, PythonIcon } from './icons';
 // import { Button } from './ui/button';
 // import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
@@ -20,8 +20,9 @@ export function CodeBlock({
   children,
   ...props
 }: CodeBlockProps) {
-  const [output, setOutput] = useState<string | null>(null);
-  const [tab, setTab] = useState<'code' | 'run'>('code');
+  // const [output, setOutput] = useState<string | null>(null);
+  // const [tabs, setTabs] = useState<string[]>(['code', 'run']);
+  const tab = 'code';
 
   const match = /language-(\w+)/.exec(className || '')
 
@@ -48,11 +49,11 @@ export function CodeBlock({
         </pre>
       )}
 
-        {tab === 'run' && output && (
+        {/* {tab === 'run' && output && (
           <div className="text-sm w-full overflow-x-auto bg-zinc-800 dark:bg-zinc-900 p-4 border border-zinc-200 dark:border-zinc-700 border-t-0 rounded-b-xl text-zinc-50">
             <code>{output}</code>
           </div>
-        )}
+        )} */}
       </div>
     );
   }

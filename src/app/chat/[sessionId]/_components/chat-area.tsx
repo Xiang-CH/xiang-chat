@@ -11,7 +11,7 @@ type MessageAnnotation = {
 };
 import { MessageReasoning } from "~/components/message-reasoning";
 import { Markdown } from "../../../../components/markdown";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { generateUUID } from "~/lib/utils";
 import PulseLoader from "react-spinners/PulseLoader";
 import { toast } from "sonner";
@@ -23,7 +23,6 @@ export default function ChatArea({
   sessionId?: string | undefined;
 } = {}) {
   const router = useRouter();
-  const currentRoute = usePathname();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [userSubmitted, setUserSubmitted] = useState(false);
   const [model, setModel] = useState<Model | undefined>(
@@ -206,7 +205,7 @@ export default function ChatArea({
                   </div>
                 </div>
               ) : (
-                <div className="px-1">
+                <div className="px-1 pl-2">
                   {m.parts.map((p, index) => {
                     if (p.type === "text") {
                       return (

@@ -33,8 +33,8 @@ export default function ChatInputAreaWrapper() {
             input={input}
             handleInputChange={(e) => setInput(e.target.value)}
             isLoading={false}
-            stop={stop}
             model={model}
+            stop={() => {/* empty */}}
             setModel={setModel}
         />
     </div>

@@ -1,6 +1,6 @@
 import { SignOutButton } from "@clerk/nextjs";
 import { Button } from "~/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { ArrowLeftIcon, ExitIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 

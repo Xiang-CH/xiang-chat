@@ -3,7 +3,7 @@ import ChatInputAreaWrapper from './_components/chat-input-area-wrapper';
 
 export default async function chatPage() {
   return (
-    <div className="h-full w-full">
+    <div className="min-h-[100dvh] w-full flex flex-col">
         <EmptySession/>
         <ChatInputAreaWrapper/>
     </div>

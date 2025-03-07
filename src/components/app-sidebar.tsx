@@ -1,6 +1,5 @@
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
-import { isServerMobile } from "~/lib/server-utils";
 
 import { loadSessionsByUserId } from "~/lib/session-store";
 import { ScrollArea } from "~/components/ui/scroll-area";
