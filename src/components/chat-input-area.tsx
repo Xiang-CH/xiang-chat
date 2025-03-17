@@ -65,7 +65,7 @@ function ChatInputArea({
   }, []);
 
   return (
-    <div className="absolute bottom-0 flex w-full max-w-[50rem] justify-center rounded-t-2xl bg-muted md:bg-background">
+    <div className="absolute left-0 md:left-auto bottom-0 flex w-full max-w-[50rem] justify-center rounded-t-2xl bg-muted md:bg-background">
       <div
         className={`${className} flex w-full max-w-[50rem] md:mb-2 md:w-[98%]`}
       >
