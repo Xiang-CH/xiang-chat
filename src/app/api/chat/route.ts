@@ -58,7 +58,10 @@ export async function POST(req: Request) {
         model: model,
         messages: messages,
         temperature: 0.8,
-        experimental_transform: smoothStream({ chunking: "word" }),
+        experimental_transform: smoothStream({ 
+          chunking: "line",
+          delayInMs: 20,
+        }),
         // async onError(err) {
         //   console.log("err", err);
         // },

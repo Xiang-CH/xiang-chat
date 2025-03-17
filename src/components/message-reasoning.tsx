@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import { ChevronDownIcon, LoaderIcon } from "./icons";
 import { motion, AnimatePresence } from "framer-motion";
 import { Markdown } from "./markdown";
@@ -10,11 +10,16 @@ interface MessageReasoningProps {
   reasoning: string;
 }
 
-export function MessageReasoning({
+// Memoize the component to prevent unnecessary re-renders
+export const MessageReasoning = memo(function MessageReasoning({
   isLoading,
   reasoning,
 }: MessageReasoningProps) {
   const [isExpanded, setIsExpanded] = useState(true);
+  
+  const toggleExpanded = useCallback(() => {
+    setIsExpanded(prev => !prev);
+  }, []);
 
   const variants = {
     collapsed: {
@@ -34,39 +39,28 @@ export function MessageReasoning({
   return (
     <div className="flex flex-col pb-2">
       <div className="flex flex-row items-center gap-2">
-      <div
-              className={
-                "font-medium" +
-                (isExpanded ? "" : " text-zinc-600 dark:text-zinc-400")
-              }
-            >
-              Reasoning
-            </div>
-        {isLoading ? (
-          <>
-            {/* <div className="font-medium">Reasoning</div> */}
-            <div className="animate-spin">
-              <LoaderIcon />
-            </div>
-          </>
-        ) : (
-          <>
-            
-            <div
-              className={
-                "cursor-pointer transition-all" +
-                (!isExpanded
-                  ? " text-zinc-600 dark:text-zinc-400"
-                  : " rotate-180")
-              }
-              onClick={() => {
-                setIsExpanded(!isExpanded);
-              }}
-            >
-              <ChevronDownIcon />
-            </div>
-          </>
+        <div
+          className={
+            "font-medium" +
+            (isExpanded ? "" : " text-zinc-600 dark:text-zinc-400")
+          }
+        >
+          Reasoning
+        </div>
+        {isLoading && (
+          <div className="animate-spin">
+            <LoaderIcon />
+          </div>
         )}
+        <div
+          className={
+            "cursor-pointer transition-all" +
+            (!isExpanded ? " text-zinc-600 dark:text-zinc-400" : " rotate-180")
+          }
+          onClick={toggleExpanded}
+        >
+          <ChevronDownIcon />
+        </div>
       </div>
 
       <AnimatePresence initial={false}>
@@ -87,4 +81,4 @@ export function MessageReasoning({
       </AnimatePresence>
     </div>
   );
-}
+});
