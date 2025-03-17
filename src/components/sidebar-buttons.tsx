@@ -157,10 +157,7 @@ export function NewChatButton() {
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setOpenMobile(false)
-    router.refresh();
-    setTimeout(() => {
-      router.push(`/chat`);
-    }, 200);
+    router.push(`/chat`);
   };
 
   return (
