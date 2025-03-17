@@ -13,6 +13,16 @@ export const metadata: Metadata = {
   title: "Xiang Chat",
   description: "A simple Chat App",
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { rel: 'icon', url: '/icon0.svg', type: 'image/svg+xml', sizes: '800x800' },
+      { rel: 'icon', url: '/favicon.ico', type: 'image/x-icon', sizes: '48x48' },
+      { rel: 'icon', url: '/icon1.png', type: 'image/png', sizes: '96x96' },
+    ],
+    apple: [
+      { rel: 'apple-touch-icon', url: '/apple-icon.png', sizes: '180x180' },
+    ],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -20,7 +30,7 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 export default async function RootLayout({
   children,
@@ -32,9 +42,6 @@ export default async function RootLayout({
         className={`${GeistSans.variable}`}
         suppressHydrationWarning
       >
-        <head>
-          <meta name="apple-mobile-web-app-title" content="XiangChat" />
-        </head>
 
         <body className="flex">
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
