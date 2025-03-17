@@ -29,7 +29,7 @@ const components: Partial<Components> = {
   },
   ul: ({ node, children, ...props }) => {
     return (
-      <ul className="list-decimal list-outside ml-8" {...props}>
+      <ul className="list-decimal list-outside ml-8 my-1" {...props}>
         {children}
       </ul>
     );

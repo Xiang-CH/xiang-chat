@@ -194,13 +194,13 @@ export default function ChatArea({
               key={m.id}
               className={
                 messageIndex == messages.length - 1 && userSubmitted
-                  ? "min-h-[80dvh]"
+                  ? "min-h-[calc(100dvh-19.5rem)]"
                   : ""
               }
             >
               {m.role === "user" ? (
                 <div className={"flex w-full justify-end"}>
-                  <div className="my-3 ml-6 w-fit rounded-xl bg-primary px-3 py-2 text-primary-foreground md:ml-14">
+                  <div className="mt-6 my-3 ml-6 w-fit rounded-xl bg-primary px-3 py-2 text-primary-foreground md:ml-14">
                     <Markdown>{m.content}</Markdown>
                   </div>
                 </div>

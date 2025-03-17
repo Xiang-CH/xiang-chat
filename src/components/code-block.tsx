@@ -6,6 +6,7 @@
 // import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 // import { cn } from '~/lib/utils';
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Button } from "./ui/button";
 import { CopyIcon } from '@radix-ui/react-icons';
 import { toast } from 'sonner';
@@ -68,6 +69,7 @@ export function CodeBlock({
         // >
             <SyntaxHighlighter 
               language={match[1]} 
+              style={tomorrow}
               customStyle={{
                 backgroundColor: 'var(--code-bg)',
                 color: 'var(--code-fg)',
