@@ -44,14 +44,6 @@ export function ModelSelector({
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
-        {/* Reasoning Models Group */}
-        <SelectGroup>
-          <SelectLabel>Reasoning Models</SelectLabel>
-          <ModelGroup
-            models={MODELS.filter((modelId) => MODEL_DATA[modelId].isReasoning)}
-          />
-        </SelectGroup>
-
         {/* Non-Reasoning Models Group */}
         <SelectGroup>
           <SelectLabel>Non-Reasoning Models</SelectLabel>
@@ -59,6 +51,13 @@ export function ModelSelector({
             models={MODELS.filter(
               (modelId) => !MODEL_DATA[modelId].isReasoning,
             )}
+          />
+        </SelectGroup>
+        {/* Reasoning Models Group */}
+        <SelectGroup>
+          <SelectLabel>Reasoning Models</SelectLabel>
+          <ModelGroup
+            models={MODELS.filter((modelId) => MODEL_DATA[modelId].isReasoning)}
           />
         </SelectGroup>
       </SelectContent>

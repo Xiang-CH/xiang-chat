@@ -9,7 +9,7 @@ import { config } from "dotenv";
 
 config({ path: ".env" });
 
-export const MODELS = ["groq/qwen-qwq-32b", "groq/deepseek-r1-distill-qwen-32b", "openrouter/deepseek-r1-llama-70b", "gemini-2.0-flash", "glm-4-plus", "glm-4-flash", "qwen2.5-vl-72b"] as const;
+export const MODELS = ["gemini-2.0-flash", "groq/qwen-qwq-32b", "groq/deepseek-r1-distill-qwen-32b", "openrouter/deepseek-r1-llama-70b", "glm-4-plus", "glm-4-flash", "qwen2.5-vl-72b"] as const;
 export type Model = typeof MODELS[number];
 export const DEFAULT_MODEL = MODELS[0];
 
