@@ -14,7 +14,7 @@ export async function loadChat(sessionId: string): Promise<Message[]> {
     content: message.content ?? "",
     parts: message.contentReasoning
       ? [
-          { type: "reasoning", reasoning: message.contentReasoning },
+          { type: "reasoning", reasoning: message.contentReasoning, details: [{type: "text", text: message.contentReasoning}] },
           { type: "text", text: message.content ?? "" },
         ]
       : [{ type: "text", text: message.content ?? "" }],
