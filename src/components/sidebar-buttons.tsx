@@ -68,7 +68,7 @@ export function SidebarTab({
       key={conversation.sessionId}
       className="cursor-pointer hover:bg-muted hover:text-foreground hover:last:opacity-100"
     >
-      <div className="session-tab flex w-full relative">
+      <div className="session-tab relative overflow-hidden">
         {renameTab ? (
           <>
             <input
@@ -96,7 +96,7 @@ export function SidebarTab({
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger
-                className="flex h-6 w-6 items-center justify-center rounded-lg bg-muted hover:bg-muted-foreground [.session-tab:hover_&]:right-1 data-[state=open]:right-1 text-muted-foreground hover:text-muted absolute right-[-10rem] top-1 transition-all focus:outline-none"
+                className="absolute flex h-6 w-6 items-center justify-center rounded-lg bg-muted hover:bg-muted-foreground [.session-tab:hover_&]:translate-x-0 [.session-tab:hover_&]:opacity-100 data-[state=open]:translate-x-0 data-[state=open]:opacity-100 text-muted-foreground hover:text-muted top-1 transition-all focus:outline-none right-0 translate-x-8 opacity-0"
               >
                   <TabOptionsIcon/>
               </DropdownMenuTrigger>
