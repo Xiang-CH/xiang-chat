@@ -87,7 +87,10 @@ function ChatInputArea({
               <div>
                 <ModelSelector
                   value={model}
-                  onChange={setModel}
+                  onChange={(value) => {
+                    localStorage.setItem("last_used_model", value)
+                    setModel(value)
+                  }}
                   disabled={!isSignedIn}
                 />
               </div>

@@ -7,7 +7,7 @@ import { type Message } from "@ai-sdk/react";
 import { useRouter } from "next/navigation";
 
 export default function ChatInputAreaWrapper() {
-    const [model, setModel] = useState<Model | undefined>(MODELS[0]);
+    const [model, setModel] = useState<Model | undefined>(localStorage.getItem("last_used_model") as Model ?? MODELS[0]);
     const [input, setInput] = useState("");
     const router = useRouter();
 

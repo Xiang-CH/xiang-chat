@@ -25,8 +25,9 @@ export default function ChatArea({
   const router = useRouter();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [userSubmitted, setUserSubmitted] = useState(false);
+  const initialMessage = JSON.parse(localStorage.getItem(`newMessage_${sessionId}`) as string) as Message;
   const [model, setModel] = useState<Model | undefined>(
-    sessionId ? undefined : MODELS[0],
+    initialMessage ?  (initialMessage.annotations?.[0] as MessageAnnotation)?.model : undefined
   );
   const [scrolled, setScrolled] = useState(false);
 
@@ -85,52 +86,50 @@ export default function ChatArea({
       return;
     }
 
-    const initialInput = localStorage.getItem(`newMessage_${sessionId}`);
-    if (initialInput) {
-      const initialMessage = JSON.parse(initialInput) as Message;
+    if (initialMessage) {
       void (async () => {
-        setModel((initialMessage.annotations?.[0] as MessageAnnotation)?.model);
         scrollToBottom();
         await append(initialMessage);
         localStorage.removeItem(`newMessage_${sessionId}`);
       })();
       return;
-    }
+    } else {
 
-    try {
-      void (async () => {
-        const initialMessages = await loadChat(sessionId);
-        if (!initialMessages || initialMessages.length == 0) {
-          router.push("/chat");
-          return;
-        }
-
-        setModel(
-          (
-            initialMessages[initialMessages.length - 1]
-              ?.annotations as MessageAnnotation[]
-          )?.[0]?.model ?? MODELS[0],
-        );
-
-        if (initialMessages[initialMessages.length - 1]?.role === "user") {
-          const lastMessage = initialMessages[initialMessages.length - 1];
-          setMessages(initialMessages.slice(0, -1));
-          if (lastMessage) {
-            await append(lastMessage);
+      try {
+        void (async () => {
+          const initialMessages = await loadChat(sessionId);
+          if (!initialMessages || initialMessages.length == 0) {
+            router.push("/chat");
+            return;
           }
-        } else {
-          console.log(initialMessages);
-          setMessages(initialMessages);
-        }
 
-        setTimeout(() => {
-          scrollToBottom();
-        }, 1);
-      })();
-    } catch (error) {
-      console.error(error);
-      router.push("/chat");
-      return;
+          setModel(
+            (
+              initialMessages[initialMessages.length - 1]
+                ?.annotations as MessageAnnotation[]
+            )?.[0]?.model ?? MODELS[0],
+          );
+
+          if (initialMessages[initialMessages.length - 1]?.role === "user") {
+            const lastMessage = initialMessages[initialMessages.length - 1];
+            setMessages(initialMessages.slice(0, -1));
+            if (lastMessage) {
+              await append(lastMessage);
+            }
+          } else {
+            console.log(initialMessages);
+            setMessages(initialMessages);
+          }
+
+          setTimeout(() => {
+            scrollToBottom();
+          }, 1);
+        })();
+      } catch (error) {
+        console.error(error);
+        router.push("/chat");
+        return;
+      }
     }
   }, []);
 
@@ -157,12 +156,12 @@ export default function ChatArea({
       router.refresh();
       console.log("refreshed");
     }
-    
+
     if (messages.length > 0 && userSubmitted) {
       timeoutId = setTimeout(() => {
         // Your scrolling logic here
         const elements = chatContainerRef.current?.children;
-        
+
         const reverseIndex =
           messages[messages.length - 1]?.role == "assistant" ? 3 : 2;
         if (elements && elements.length >= reverseIndex && !scrolled) {
@@ -178,7 +177,7 @@ export default function ChatArea({
         }
       }, 50); // Increased debounce time
     }
-    
+
     return () => clearTimeout(timeoutId);
   }, [messages, isLoading, userSubmitted, scrolled]);
 

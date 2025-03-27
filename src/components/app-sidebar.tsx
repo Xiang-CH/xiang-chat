@@ -4,12 +4,11 @@ import { auth } from "@clerk/nextjs/server";
 import { loadSessionsByUserId } from "~/lib/session-store";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Button } from "./ui/button";
-import { SidebarTab, NewChatButton, NewSessionTab, ConversationGroup } from "./sidebar-buttons";
+import { NewChatButton, ConversationGroup } from "./sidebar-buttons";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
   SidebarHeader,
 } from "~/components/ui/sidebar";
 

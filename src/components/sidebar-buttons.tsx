@@ -43,10 +43,7 @@ export function SidebarTab({
     e.preventDefault();
     setIsActive(true);
     setOpenMobile(false);
-    router.refresh();
-    setTimeout(() => {
-      router.push(`/chat/${conversation.sessionId}`);
-    }, 200);
+    router.push(`/chat/${conversation.sessionId}`);
   };
 
   useEffect(() => {

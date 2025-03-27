@@ -1,10 +1,8 @@
 "use client";
 
 import { TabsContent } from "~/components/ui/tabs";
-import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "~/components/ui/button";
-// import { useClerk } from "@clerk/clerk-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -49,7 +47,7 @@ export default function AccountPage() {
     <TabsContent value="account">
       <div className="flex gap-8">
         <div className="flex flex-col items-center">
-          <Image
+          <img
             src={user.imageUrl}
             className="w-40 rounded-full"
             alt="User Profile Pic"
