@@ -1,3 +1,4 @@
+"use server";
 import { db } from "~/server/db";
 import { sessions } from "~/server/db/schema";
 import { deleteAllMessageBySessionId, saveMessages } from "~/lib/message-store";

@@ -1,5 +1,6 @@
-import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
+"use client";
+import { SignInButton, SignedIn, SignedOut, UserButton, useAuth } from "@clerk/nextjs";
+// import { auth } from "@clerk/nextjs/server";
 
 import { loadSessionsByUserId } from "~/lib/session-store";
 import { ScrollArea } from "~/components/ui/scroll-area";
@@ -11,6 +12,8 @@ import {
   SidebarFooter,
   SidebarHeader,
 } from "~/components/ui/sidebar";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 interface Conversation {
   sessionId: string;
@@ -82,11 +85,26 @@ function groupConversationsByTime(conversations: Conversation[]) {
 //   );
 // }
 
-export async function AppSidebar(): Promise<JSX.Element> {
-  const { userId } = await auth();
-
-  const conversations = await loadSessionsByUserId(userId);
+export function AppSidebar(): JSX.Element {
+  const { userId } = useAuth();
+  const currentPath = usePathname();
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeSessionId, setActiveSessionId] = useState<string | null | undefined>(
+    currentPath.startsWith("/chat/") ? currentPath.split("/")[2] : null
+  );
   const groupedConversations = groupConversationsByTime(conversations);
+
+  useEffect(() => {
+    if (userId) {
+      loadSessionsByUserId(userId)
+      .then((sessions) => {
+        setConversations(sessions);
+      })
+      .catch((error) => {
+        console.error("Error loading sessions:", error);
+      });
+    }
+  }, [userId]);
 
   return (
     <Sidebar className="border-r-[1px] border-sidebar-border">
@@ -100,22 +118,32 @@ export async function AppSidebar(): Promise<JSX.Element> {
               conversations={groupedConversations.today} 
               isFirst={true}
               fullConversations={conversations}
+              activeSessionId={activeSessionId}
+              setActiveSessionId={setActiveSessionId}
             />
             <ConversationGroup 
               title="Yesterday" 
-              conversations={groupedConversations.yesterday} 
+              conversations={groupedConversations.yesterday}
+              activeSessionId={activeSessionId}
+              setActiveSessionId={setActiveSessionId}
             />
             <ConversationGroup 
               title="Past Week" 
-              conversations={groupedConversations.pastWeek} 
+              conversations={groupedConversations.pastWeek}
+              activeSessionId={activeSessionId}
+              setActiveSessionId={setActiveSessionId}
             />
             <ConversationGroup 
               title="Past Month" 
               conversations={groupedConversations.pastMonth} 
+              activeSessionId={activeSessionId}
+              setActiveSessionId={setActiveSessionId}
             />
             <ConversationGroup 
               title="Older" 
               conversations={groupedConversations.older} 
+              activeSessionId={activeSessionId}
+              setActiveSessionId={setActiveSessionId}
             />
         </ScrollArea>
       </SidebarContent>

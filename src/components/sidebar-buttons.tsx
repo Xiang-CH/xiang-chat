@@ -26,29 +26,32 @@ import {
 
 export function SidebarTab({
   conversation,
+  setActiveSessionId,
+  activeSessionId,
 }: {
   conversation: { sessionId: string | null; sessionTitle: string | null };
+  setActiveSessionId: (id: string | null) => void;
+  activeSessionId: string | null | undefined;
 }) {
-  const currentPath = usePathname();
   const router = useRouter();
   const { setOpenMobile } = useSidebar();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [sessionTitle, setSessionTitle] = useState(conversation.sessionTitle);
   const [renameTab, setRenameTab] = useState(false);
   const [isActive, setIsActive] = useState(
-    currentPath === "/chat/" + conversation.sessionId,
+    conversation.sessionId === activeSessionId
   );
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    setIsActive(true);
+    setActiveSessionId(conversation.sessionId);
     setOpenMobile(false);
     router.push(`/chat/${conversation.sessionId}`);
   };
 
   useEffect(() => {
-    setIsActive(currentPath === "/chat/" + conversation.sessionId);
-  }, [currentPath]);
+    setIsActive(conversation.sessionId === activeSessionId);
+  }, [activeSessionId, conversation.sessionId]);
 
   async function handleRenameTab(e: React.FocusEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>) {
     e.preventDefault();
@@ -217,12 +220,16 @@ export function ConversationGroup({
   title, 
   conversations, 
   isFirst = false,
-  fullConversations
+  fullConversations,
+  activeSessionId,
+  setActiveSessionId,
 }: { 
   title: string; 
   conversations: Conversation[]; 
   isFirst?: boolean;
   fullConversations?: Conversation[];
+  activeSessionId: string | null | undefined;
+  setActiveSessionId: (id: string | null) => void;
 }) {
   const router = useRouter();
   const currentPath = usePathname();
@@ -255,6 +262,8 @@ export function ConversationGroup({
         <SidebarTab
           conversation={conversation}
           key={conversation.sessionId}
+          setActiveSessionId={setActiveSessionId}
+          activeSessionId={activeSessionId}
         />
       ))}
       
