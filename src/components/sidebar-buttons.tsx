@@ -207,7 +207,7 @@ interface Conversation {
 }
 
 // Add a new function to delete multiple sessions
-async function deleteMultipleSessions(sessionIds: string[], router: any, isActiveIncluded: boolean) {
+async function deleteMultipleSessions(sessionIds: string[], router: ReturnType<typeof useRouter>, isActiveIncluded: boolean) {
   for (const id of sessionIds) {
     if (id) await deleteSession(id);
   }
@@ -264,7 +264,7 @@ export function ConversationGroup({
       <Dialog open={isDeleteAllDialogOpen} onOpenChange={setIsDeleteAllDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete all conversations in "{title}"?</DialogTitle>
+            <DialogTitle>Delete all conversations in &quot;{title}&quot;?</DialogTitle>
             <DialogDescription>
               This action cannot be undone. This will permanently delete all conversations in this group.
             </DialogDescription>

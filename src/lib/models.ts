@@ -50,7 +50,7 @@ export const MODEL_DATA = {
         name: "Qwen QwQ",
         icon: "qwen",
         model: wrapLanguageModel({
-            model: MODEL_PROVIDERS.groq("qwen-qwq-32b") as LanguageModelV1,
+            model: MODEL_PROVIDERS.groq("qwen-qwq-32b"),
             middleware: extractReasoningMiddleware({
                 tagName: "think"
             }),
@@ -78,7 +78,7 @@ export const MODEL_DATA = {
         name: "Deepseek R1 distill Qwen",
         icon: "deepseek",
         model: wrapLanguageModel({
-            model: MODEL_PROVIDERS.groq("deepseek-r1-distill-qwen-32b") as LanguageModelV1,
+            model: MODEL_PROVIDERS.groq("deepseek-r1-distill-qwen-32b"),
             middleware: extractReasoningMiddleware({
                 tagName: "think"
             }),
