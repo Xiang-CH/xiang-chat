@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { SidebarGroup, SidebarMenuButton, useSidebar } from "./ui/sidebar";
 import { Button } from "./ui/button";
@@ -69,7 +68,7 @@ export function SidebarTab({
       key={conversation.sessionId}
       className="cursor-pointer hover:bg-muted hover:text-foreground hover:last:opacity-100"
     >
-      <div className="session-tab flex w-full justify-between">
+      <div className="session-tab flex w-full relative">
         {renameTab ? (
           <>
             <input
@@ -88,19 +87,18 @@ export function SidebarTab({
           </>
         ) : (
           <>
-            <Link
+            <div
               key={conversation.sessionId}
-              href={`/chat/${conversation.sessionId}`}
               onClick={handleClick}
               className="w-full overflow-hidden text-ellipsis text-nowrap rounded-md px-1 py-1.5 text-[0.9rem] text-muted-foreground"
             >
               <span>{sessionTitle}</span>
-            </Link>
+            </div>
             <DropdownMenu>
               <DropdownMenuTrigger
-                className="flex h-4 w-6 items-center justify-center rounded-full opacity-0 transition-opacity hover:bg-gray-300 [.session-tab:hover_&]:opacity-100 text-muted-foreground"
+                className="flex h-6 w-6 items-center justify-center rounded-lg bg-muted hover:bg-muted-foreground [.session-tab:hover_&]:right-1 data-[state=open]:right-1 text-muted-foreground hover:text-muted absolute right-[-10rem] top-1 transition-all focus:outline-none"
               >
-                <TabOptionsIcon />
+                  <TabOptionsIcon/>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem onSelect={() => setRenameTab(true)}>
@@ -247,7 +245,7 @@ export function ConversationGroup({
         <div className="text-xs font-semibold text-muted-foreground">{title}</div>
         {conversations.length > 0 && (
           <DropdownMenu>
-            <DropdownMenuTrigger className="opacity-0 transition-opacity hover:opacity-100 h-4 w-4 flex items-center justify-center rounded-full hover:bg-gray-200 text-muted-foreground focus:outline-none data-[state=open]:opacity-100 data-[state=open]:bg-gray-200">
+            <DropdownMenuTrigger className="opacity-0 transition-opacity hover:opacity-100 h-4 w-4 flex items-center justify-center rounded-full hover:bg-muted-foreground text-muted-foreground hover:text-muted focus:outline-none data-[state=open]:opacity-100 data-[state=open]:bg-muted-foreground data-[state=open]:text-muted">
               <CaretDownIcon />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
