@@ -203,7 +203,7 @@ export default function ChatArea({
             >
               {m.role === "user" ? (
                 <div className={"flex w-full justify-end"}>
-                  <div className="my-3 ml-6 mt-6 w-fit rounded-xl bg-primary px-3 py-2 text-primary-foreground md:ml-14">
+                  <div className="my-3 ml-6 w-fit rounded-xl bg-primary px-3 py-2 text-primary-foreground md:ml-14">
                     <Markdown>{m.content}</Markdown>
                   </div>
                 </div>

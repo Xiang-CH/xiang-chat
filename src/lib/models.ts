@@ -99,6 +99,7 @@ export const MODEL_DATA = {
         icon: "gemini",
         model: MODEL_PROVIDERS.google("gemini-2.5-pro-exp-03-25"),
         provider: "google",
+        isReasoning: true,
     },
     "openrouter/deepseek-r1-llama-70b": {
         id: "openrouter/deepseek-r1-llama-70b",
