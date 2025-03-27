@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { SidebarMenuButton, useSidebar } from "./ui/sidebar";
+import { SidebarGroup, SidebarMenuButton, useSidebar } from "./ui/sidebar";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { deleteSession, changeSessionTitle } from "~/lib/actions";
+import { DotsHorizontalIcon, CaretDownIcon } from "@radix-ui/react-icons";
 
 import {
   DropdownMenu,
@@ -187,7 +188,7 @@ export function NewSessionTab({sessions}: { sessions: { sessionId: string }[] })
     <SidebarMenuButton
       asChild
       isActive={true}
-      className="cursor-pointer hover:bg-muted hover:text-foreground hover:last:opacity-100"
+      className="cursor-pointer hover:bg-muted text-muted-foreground"
     >
       <div className="w-full overflow-hidden text-ellipsis text-nowrap rounded-md px-3 py-1.5 text-[0.9rem] text-muted-foreground" onClick={() => setOpenMobile(false)}>
         <span>
@@ -198,19 +199,107 @@ export function NewSessionTab({sessions}: { sessions: { sessionId: string }[] })
   );
 }
 
+interface Conversation {
+  sessionId: string;
+  userId: string;
+  sessionTitle: string | null;
+  createdAt: Date | string;
+}
+
+// Add a new function to delete multiple sessions
+async function deleteMultipleSessions(sessionIds: string[], router: any, isActiveIncluded: boolean) {
+  for (const id of sessionIds) {
+    if (id) await deleteSession(id);
+  }
+  if (isActiveIncluded) router.push("/chat");
+  router.refresh();
+}
+
+// Helper function to render a group of conversations
+export function ConversationGroup({ 
+  title, 
+  conversations, 
+  isFirst = false,
+  fullConversations
+}: { 
+  title: string; 
+  conversations: Conversation[]; 
+  isFirst?: boolean;
+  fullConversations?: Conversation[];
+}) {
+  const router = useRouter();
+  const currentPath = usePathname();
+  const [isDeleteAllDialogOpen, setIsDeleteAllDialogOpen] = useState(false);
+  
+  if (conversations.length === 0) return null;
+  
+  const currentSessionId = currentPath.split("/")[2];
+  const isActiveIncluded = conversations.some(conv => conv.sessionId === currentSessionId);
+  
+  return (
+    <SidebarGroup className={`${isFirst ? 'mt-1' : 'mt-4'} flex max-w-[18rem] flex-col gap-[2px] px-4 md:max-w-[16rem]`}>
+      <div className="flex justify-start items-center px-1 h-5 gap-1">
+        <div className="text-xs font-semibold text-muted-foreground">{title}</div>
+        {conversations.length > 0 && (
+          <DropdownMenu>
+            <DropdownMenuTrigger className="opacity-0 transition-opacity hover:opacity-100 h-4 w-4 flex items-center justify-center rounded-full hover:bg-gray-200 text-muted-foreground focus:outline-none data-[state=open]:opacity-100 data-[state=open]:bg-gray-200">
+              <CaretDownIcon />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onSelect={() => setIsDeleteAllDialogOpen(true)}>
+                Delete All
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </div>
+      {isFirst && <NewSessionTab sessions={fullConversations ?? []} />}
+      {conversations.map((conversation) => (
+        <SidebarTab
+          conversation={conversation}
+          key={conversation.sessionId}
+        />
+      ))}
+      
+      <Dialog open={isDeleteAllDialogOpen} onOpenChange={setIsDeleteAllDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete all conversations in "{title}"?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete all conversations in this group.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="secondary"
+                onClick={() => setIsDeleteAllDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={async () => {
+                  const sessionIds = conversations.map(conv => conv.sessionId);
+                  const button = document.activeElement as HTMLButtonElement;
+                  if (button) {
+                    button.disabled = true;
+                    button.innerText = "Deleting...";
+                  }
+                  await deleteMultipleSessions(sessionIds, router, isActiveIncluded);
+                  setIsDeleteAllDialogOpen(false);
+                }}
+              >
+                Delete All
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </SidebarGroup>
+  );
+}
+
 const TabOptionsIcon = () => (
-  <svg
-    width="15"
-    height="15"
-    viewBox="0 0 15 15"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M3.625 7.5C3.625 8.12132 3.12132 8.625 2.5 8.625C1.87868 8.625 1.375 8.12132 1.375 7.5C1.375 6.87868 1.87868 6.375 2.5 6.375C3.12132 6.375 3.625 6.87868 3.625 7.5ZM8.625 7.5C8.625 8.12132 8.12132 8.625 7.5 8.625C6.87868 8.625 6.375 8.12132 6.375 7.5C6.375 6.87868 6.87868 6.375 7.5 6.375C8.12132 6.375 8.625 6.87868 8.625 7.5ZM12.5 8.625C13.1213 8.625 13.625 8.12132 13.625 7.5C13.625 6.87868 13.1213 6.375 12.5 6.375C11.8787 6.375 11.375 6.87868 11.375 7.5C11.375 8.12132 11.8787 8.625 12.5 8.625Z"
-      fill="currentColor"
-      fillRule="evenodd"
-      clipRule="evenodd"
-    ></path>
-  </svg>
+  <DotsHorizontalIcon/>
 );

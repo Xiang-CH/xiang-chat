@@ -51,6 +51,8 @@ export async function POST(req: Request) {
     model: modelId,
   }
 
+  console.log("route", messages)
+
   return createDataStreamResponse({
     execute: (dataStream) => {
       dataStream.writeMessageAnnotation({ model: modelId });
@@ -59,12 +61,12 @@ export async function POST(req: Request) {
         messages: messages,
         temperature: 0.8,
         experimental_transform: smoothStream({ 
-          chunking: "line",
+          chunking: "word",
           delayInMs: 20,
         }),
-        // async onError(err) {
-        //   console.log("err", err);
-        // },
+        async onError(err) {
+          console.log("err", err);
+        },
         async onFinish({ text, reasoning}) {
           const assistantMessage = {
             messageId: crypto.randomUUID(),
@@ -76,7 +78,7 @@ export async function POST(req: Request) {
             createdAt: undefined,
           };
 
-          console.log("route", assistantMessage)
+          // console.log("route", assistantMessage)
 
           if (messages.length == 1) {
             await createNewSession(userId, [lastMessageFormatted, assistantMessage], id);

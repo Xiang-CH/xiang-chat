@@ -103,10 +103,10 @@ const components: Partial<Components> = {
 
 const remarkPlugins = [remarkGfm, remarkMath];
 
-const NonMemoizedMarkdown = ({ children }: { children: string }) => {
+const NonMemoizedMarkdown = ({ children, className }: { children: string; className?: string }) => {
   return (
     <div>
-      <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={[rehypeKatex]} components={components} className="font-normal leading-loose">
+      <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={[rehypeKatex]} components={components} className={"font-normal leading-loose " + (className ? className : "")}>
         {children}
       </ReactMarkdown>
     </div>
@@ -115,5 +115,7 @@ const NonMemoizedMarkdown = ({ children }: { children: string }) => {
 
 export const Markdown = memo(
   NonMemoizedMarkdown,
-  (prevProps, nextProps) => prevProps.children === nextProps.children,
+  (prevProps, nextProps) => 
+    prevProps.children === nextProps.children && 
+    prevProps.className === nextProps.className,
 );
