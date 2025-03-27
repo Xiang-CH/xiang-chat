@@ -109,7 +109,7 @@ export function AppSidebar(): JSX.Element {
   return (
     <Sidebar className="border-r-[1px] border-sidebar-border">
       <SidebarHeader className="mt-2 px-4">
-        <NewChatButton />
+        <NewChatButton setActiveSessionId={setActiveSessionId} />
       </SidebarHeader>
       <SidebarContent className="relative max-w-full">
         <ScrollArea className="relative h-full w-full">

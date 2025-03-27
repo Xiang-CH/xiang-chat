@@ -152,12 +152,13 @@ export function SidebarTab({
   );
 }
 
-export function NewChatButton() {
+export function NewChatButton({setActiveSessionId} :{setActiveSessionId: (id: string | null) => void}) {
   const { setOpenMobile } = useSidebar();
   const router = useRouter();
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    setOpenMobile(false)
+    setOpenMobile(false);
+    setActiveSessionId(null);
     router.push(`/chat`);
   };
 
