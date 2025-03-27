@@ -9,7 +9,7 @@ import { config } from "dotenv";
 
 config({ path: ".env" });
 
-export const MODELS = ["gemini-2.0-flash", "groq/qwen-qwq-32b", "groq/deepseek-r1-distill-qwen-32b", "openrouter/deepseek-r1-llama-70b", "glm-4-plus", "glm-4-flash", "qwen2.5-vl-72b"] as const;
+export const MODELS = ["gemini-2.0-flash", "openrouter/deepseek-v3", "groq/qwen-qwq-32b", "groq/deepseek-r1-distill-qwen-32b", "openrouter/deepseek-r1-llama-70b", "glm-4-plus",  "qwen2.5-vl-72b", "gemini-2.5-pro"] as const;
 export type Model = typeof MODELS[number];
 export const DEFAULT_MODEL = MODELS[0];
 
@@ -58,6 +58,14 @@ export const MODEL_DATA = {
         provider: "groq",
         isReasoning: true,
     },
+    "openrouter/deepseek-v3": {
+        id: "openrouter/deepseek-v3",
+        name: "Deepseek V3",
+        icon: "deepseek",
+        model: MODEL_PROVIDERS.openrouter("deepseek/deepseek-chat-v3-0324:free"),
+        provider: "openrouter",
+        isReasoning: false,
+    },
     "glm-4-plus": {
         id: "glm-4-plus",
         name: 'GLM 4 Plus',
@@ -85,6 +93,13 @@ export const MODEL_DATA = {
         model: MODEL_PROVIDERS.google("gemini-2.0-flash"),
         provider: "google",
     },
+    "gemini-2.5-pro": {
+        id: "gemini-2.5-pro",
+        name: "Gemini 2.5 Pro",
+        icon: "gemini",
+        model: MODEL_PROVIDERS.google("gemini-2.5-pro-exp-03-25"),
+        provider: "google",
+    },
     "openrouter/deepseek-r1-llama-70b": {
         id: "openrouter/deepseek-r1-llama-70b",
         name: "Deepseek R1 distill llama",
@@ -94,13 +109,13 @@ export const MODEL_DATA = {
         isReasoning: true,
         // disabled: true,
     },
-    "glm-4-flash": {
-        id: "glm-4-flash",
-        name: 'GLM 4 Flash',
-        icon: "zhipu",
-        model: MODEL_PROVIDERS.zhipu("glm-4-flash"),
-        provider: "zhipu",
-    },
+    // "glm-4-flash": {
+    //     id: "glm-4-flash",
+    //     name: 'GLM 4 Flash',
+    //     icon: "zhipu",
+    //     model: MODEL_PROVIDERS.zhipu("glm-4-flash"),
+    //     provider: "zhipu",
+    // },
     "qwen2.5-vl-72b": {
         id: "qwen2.5-vl-72b",
         name: 'Qwen 2.5 VL 72b',
