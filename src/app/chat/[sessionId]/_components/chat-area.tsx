@@ -2,7 +2,7 @@
 import { type Message, useChat } from "@ai-sdk/react";
 import { loadChat } from "~/lib/actions";
 import { ChatInputArea } from "~/components/chat-input-area";
-import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { type Model, MODELS } from "~/lib/models";
 import { CopyIcon } from "@radix-ui/react-icons";
 
