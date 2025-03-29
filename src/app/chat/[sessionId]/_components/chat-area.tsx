@@ -6,9 +6,6 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { type Model, MODELS } from "~/lib/models";
 import { CopyIcon } from "@radix-ui/react-icons";
 
-type MessageAnnotation = {
-  model: Model;
-};
 import { MessageReasoning } from "~/components/message-reasoning";
 import { Markdown } from "../../../../components/markdown";
 import { useRouter } from "next/navigation";
@@ -16,6 +13,10 @@ import { generateUUID } from "~/lib/utils";
 import PulseLoader from "react-spinners/PulseLoader";
 import { toast } from "sonner";
 import { Button } from "../../../../components/ui/button";
+
+type MessageAnnotation = {
+  model: Model;
+};
 
 export default function ChatArea({
   sessionId,

@@ -36,6 +36,7 @@ function ChatInputArea({
   const { isSignedIn } = useAuth();
   const [isStandalone, setIsStandalone] = useState(false);
 
+  
   useEffect(() => {
     // Check if the app is running in standalone mode (installed PWA)
     const isInStandaloneMode = (): boolean => {
@@ -84,7 +85,7 @@ function ChatInputArea({
               disabled={!isSignedIn}
             />
             <div className="flex w-full items-end justify-between">
-              <div>
+              <div className="flex items-center gap-2">
                 <ModelSelector
                   value={model}
                   onChange={(value) => {
@@ -94,7 +95,7 @@ function ChatInputArea({
                   disabled={!isSignedIn}
                 />
               </div>
-              <ChatInputSubmit />
+              <ChatInputSubmit/>
             </div>
             {isStandalone && <div className="pb-10"></div>}
           </ChatInput>
