@@ -25,19 +25,9 @@ export default function ChatArea({
   const router = useRouter();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [userSubmitted, setUserSubmitted] = useState(false);
-  const [initialMessage, setInitialMessage] = useState<Message | null>(null);
+  // const [initialMessage, setInitialMessage] = useState<Message | null>(null);
   const [model, setModel] = useState<Model | undefined>(undefined);
   const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    // Access localStorage only after component has mounted (client-side)
-    const storedMessage = localStorage.getItem(`newMessage_${sessionId}`);
-    if (storedMessage) {
-      const parsedMessage = JSON.parse(storedMessage) as Message;
-      setInitialMessage(parsedMessage);
-      setModel((parsedMessage.annotations?.[0] as MessageAnnotation)?.model);
-    }
-  }, [sessionId]);
 
   const {
     input,
@@ -94,10 +84,15 @@ export default function ChatArea({
       return;
     }
 
+    const initialMessage = localStorage.getItem(`newMessage_${sessionId}`);
+
     if (initialMessage) {
       void (async () => {
+        const parsedMessage = JSON.parse(initialMessage) as Message;
+        setModel((parsedMessage.annotations?.[0] as MessageAnnotation)?.model);
         scrollToBottom();
-        await append(initialMessage);
+
+        await append(parsedMessage);
         localStorage.removeItem(`newMessage_${sessionId}`);
       })();
       return;
