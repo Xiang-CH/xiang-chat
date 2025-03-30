@@ -9,11 +9,11 @@ import { config } from "dotenv";
 
 config({ path: ".env" });
 
-export const MODELS = ["gemini-2.0-flash", "openrouter/deepseek-v3", "groq/qwen-qwq-32b", "groq/deepseek-r1-distill-qwen-32b", "openrouter/deepseek-r1-llama-70b", "glm-4-plus",  "qwen2.5-vl-72b", "gemini-2.5-pro"] as const;
+export const MODELS = ["gemini-2.0-flash", "openrouter/deepseek-v3", "groq/qwen-qwq-32b", "groq/deepseek-r1-distill-qwen-32b", "openrouter/deepseek-r1-llama-70b", "glm-4-plus",  "qwen2.5-vl-72b", "gemini-2.5-pro", "glm-4-flash", "groq/llama-3.1-8b"] as const;
 export type Model = typeof MODELS[number];
 export const DEFAULT_MODEL = MODELS[0];
 
-export const MODEL_ICONS = ["deepseek", "zhipu", "openai", "groq", "qwen", "gemini"] as const;
+export const MODEL_ICONS = ["deepseek", "zhipu", "openai", "groq", "qwen", "gemini", "meta"] as const;
 export type ModelIcon = typeof MODEL_ICONS[number];
 
 const MODEL_PROVIDERS = {
@@ -86,6 +86,13 @@ export const MODEL_DATA = {
         provider: "groq",
         isReasoning: true,
     },
+    "groq/llama-3.1-8b": {
+        id: "groq/llama-3.1-8b",
+        name: "Llama 3.1 8b",
+        icon: "meta",
+        model: MODEL_PROVIDERS.groq("llama-3.1-8b-instant"),
+        provider: "groq",
+    },
     "gemini-2.0-flash": {
         id: "gemini-2.0-flash",
         name: "Gemini 2.0 Flash",
@@ -110,13 +117,13 @@ export const MODEL_DATA = {
         isReasoning: true,
         // disabled: true,
     },
-    // "glm-4-flash": {
-    //     id: "glm-4-flash",
-    //     name: 'GLM 4 Flash',
-    //     icon: "zhipu",
-    //     model: MODEL_PROVIDERS.zhipu("glm-4-flash"),
-    //     provider: "zhipu",
-    // },
+    "glm-4-flash": {
+        id: "glm-4-flash",
+        name: 'GLM 4 Flash',
+        icon: "zhipu",
+        model: MODEL_PROVIDERS.zhipu("glm-4-flash"),
+        provider: "zhipu",
+    },
     "qwen2.5-vl-72b": {
         id: "qwen2.5-vl-72b",
         name: 'Qwen 2.5 VL 72b',

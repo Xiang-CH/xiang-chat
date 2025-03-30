@@ -15,7 +15,7 @@ function ChatInputArea({
   handleSubmit,
   input,
   handleInputChange,
-  isLoading,
+  status,
   stop,
   model,
   setModel,
@@ -28,7 +28,7 @@ function ChatInputArea({
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLTextAreaElement>,
   ) => void;
-  isLoading: boolean;
+  status: 'ready' | 'streaming' | 'submitted' | 'error';
   stop: () => void;
   model: Model | undefined;
   setModel: (model: Model) => void;
@@ -76,7 +76,7 @@ function ChatInputArea({
             value={input}
             onChange={handleInputChange}
             onSubmit={handleSubmit}
-            loading={isLoading}
+            loading={status === 'submitted' || status === 'streaming'}
             onStop={() => stop()}
             className="rounded-b-none bg-muted focus-within:ring-0 md:rounded-b-2xl"
           >

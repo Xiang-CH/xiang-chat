@@ -5,7 +5,7 @@ import { SignInButton, SignedIn, SignedOut, UserButton, useAuth } from "@clerk/n
 import { loadSessionsByUserId } from "~/lib/session-store";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Button } from "./ui/button";
-import { NewChatButton, ConversationGroup } from "./sidebar-buttons";
+import { NewChatButton, ConversationGroup, NewSessionTab } from "./sidebar-buttons";
 import {
   Sidebar,
   SidebarContent,
@@ -14,6 +14,7 @@ import {
 } from "~/components/ui/sidebar";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useSidebarRefresh } from "~/context/sidebar-refresh-context";
 
 interface Conversation {
   sessionId: string;
@@ -92,6 +93,7 @@ export function AppSidebar(): JSX.Element {
   const [activeSessionId, setActiveSessionId] = useState<string | null | undefined>(
     currentPath.startsWith("/chat/") ? currentPath.split("/")[2] : null
   );
+  const { refreshTrigger, newSessionTitle } = useSidebarRefresh();
   const groupedConversations = groupConversationsByTime(conversations);
 
   useEffect(() => {
@@ -99,12 +101,13 @@ export function AppSidebar(): JSX.Element {
       loadSessionsByUserId(userId)
       .then((sessions) => {
         setConversations(sessions);
+        setActiveSessionId(currentPath.startsWith("/chat/") ? currentPath.split("/")[2] : null);
       })
       .catch((error) => {
         console.error("Error loading sessions:", error);
       });
     }
-  }, [userId]);
+  }, [userId, refreshTrigger, currentPath]); // Add refreshTrigger as a dependency
 
   return (
     <Sidebar className="border-r-[1px] border-sidebar-border">
@@ -120,6 +123,7 @@ export function AppSidebar(): JSX.Element {
               fullConversations={conversations}
               activeSessionId={activeSessionId}
               setActiveSessionId={setActiveSessionId}
+              newSessionTitle={newSessionTitle}
             />
             <ConversationGroup 
               title="Yesterday" 

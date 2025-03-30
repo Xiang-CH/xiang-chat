@@ -22,6 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
+import { useSidebarRefresh } from "~/context/sidebar-refresh-context";
 
 export function SidebarTab({
   conversation,
@@ -40,6 +41,7 @@ export function SidebarTab({
   const [isActive, setIsActive] = useState(
     conversation.sessionId === activeSessionId
   );
+  const { triggerRefresh } = useSidebarRefresh();
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -136,7 +138,7 @@ export function SidebarTab({
                       await deleteSession(conversation.sessionId);
                     setIsDeleteDialogOpen(false);
                     if (isActive) router.push("/chat");
-                    router.refresh();
+                    triggerRefresh();
                   }}
                 >
                   Delete
@@ -169,7 +171,7 @@ export function NewChatButton({setActiveSessionId} :{setActiveSessionId: (id: st
   );
 }
 
-export function NewSessionTab({sessions}: { sessions: { sessionId: string }[] }) {
+export function NewSessionTab({sessions, newSessionTitle}: { sessions: { sessionId: string }[], newSessionTitle: string | null | undefined }) {
   const { setOpenMobile } = useSidebar();
   const currentPath = usePathname();
 
@@ -189,9 +191,9 @@ export function NewSessionTab({sessions}: { sessions: { sessionId: string }[] })
       isActive={true}
       className="cursor-pointer hover:bg-muted text-muted-foreground"
     >
-      <div className="w-full overflow-hidden text-ellipsis text-nowrap rounded-md px-3 py-1.5 text-[0.9rem] text-muted-foreground" onClick={() => setOpenMobile(false)}>
+      <div className="w-full overflow-hidden text-ellipsis text-nowrap rounded-md px-3 py-1.5 text-[0.9rem] text-muted-foreground hover:animate-[scroll_5s_linear_infinite]" onClick={() => setOpenMobile(false)}>
         <span>
-          {"new chat"}
+          {newSessionTitle ?? "new chat"}
         </span>
       </div>
     </SidebarMenuButton>
@@ -211,7 +213,6 @@ async function deleteMultipleSessions(sessionIds: string[], router: ReturnType<t
     if (id) await deleteSession(id);
   }
   if (isActiveIncluded) router.push("/chat");
-  router.refresh();
 }
 
 // Helper function to render a group of conversations
@@ -222,6 +223,7 @@ export function ConversationGroup({
   fullConversations,
   activeSessionId,
   setActiveSessionId,
+  newSessionTitle
 }: { 
   title: string; 
   conversations: Conversation[]; 
@@ -229,12 +231,14 @@ export function ConversationGroup({
   fullConversations?: Conversation[];
   activeSessionId: string | null | undefined;
   setActiveSessionId: (id: string | null) => void;
+  newSessionTitle?: string | null | undefined;
 }) {
   const router = useRouter();
   const currentPath = usePathname();
   const [isDeleteAllDialogOpen, setIsDeleteAllDialogOpen] = useState(false);
+  const { triggerRefresh } = useSidebarRefresh();
   
-  if (conversations.length === 0) return null;
+  if (conversations.length === 0 && (!isFirst || !activeSessionId)) return null;
   
   const currentSessionId = currentPath.split("/")[2];
   const isActiveIncluded = conversations.some(conv => conv.sessionId === currentSessionId);
@@ -256,7 +260,7 @@ export function ConversationGroup({
           </DropdownMenu>
         )}
       </div>
-      {isFirst && <NewSessionTab sessions={fullConversations ?? []} />}
+      {isFirst && <NewSessionTab sessions={fullConversations ?? []} newSessionTitle={newSessionTitle} />}
       {conversations.map((conversation) => (
         <SidebarTab
           conversation={conversation}
@@ -292,6 +296,7 @@ export function ConversationGroup({
                     button.innerText = "Deleting...";
                   }
                   await deleteMultipleSessions(sessionIds, router, isActiveIncluded);
+                  triggerRefresh();
                   setIsDeleteAllDialogOpen(false);
                 }}
               >

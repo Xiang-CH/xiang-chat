@@ -46,6 +46,7 @@ export async function createNewSession(
   userId: string,
   initialMessages: message[],
   sessionId?: string,
+  sessionTitle?: string | null,
 ) {
   if (!sessionId) {
     sessionId = crypto.randomUUID();
@@ -53,7 +54,7 @@ export async function createNewSession(
   await db.insert(sessions).values({
     sessionId: sessionId,
     userId: userId,
-    sessionTitle: initialMessages[0]?.content ?? "Untitled Session",
+    sessionTitle: sessionTitle ?? "Untitled Session",
   });
   
   initialMessages.forEach((message) => {

@@ -5,6 +5,7 @@ import { ChatInputArea } from "~/components/chat-input-area";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { type Model, MODELS } from "~/lib/models";
 import { CopyIcon } from "@radix-ui/react-icons";
+import { useSidebarRefresh } from "~/context/sidebar-refresh-context";
 
 import { MessageReasoning } from "~/components/message-reasoning";
 import { Markdown } from "../../../../components/markdown";
@@ -15,7 +16,8 @@ import { toast } from "sonner";
 import { Button } from "../../../../components/ui/button";
 
 type MessageAnnotation = {
-  model: Model;
+  model?: Model;
+  sessionTitle?: string;
 };
 
 export default function ChatArea({
@@ -29,6 +31,7 @@ export default function ChatArea({
   // const [initialMessage, setInitialMessage] = useState<Message | null>(null);
   const [model, setModel] = useState<Model | undefined>(undefined);
   const [scrolled, setScrolled] = useState(false);
+  const [titleUpdated, setTitleUpdated] = useState(false);
 
   const {
     input,
@@ -36,7 +39,7 @@ export default function ChatArea({
     handleSubmit,
     messages,
     setMessages,
-    isLoading,
+    status,
     stop,
     append,
   } = useChat({
@@ -153,12 +156,22 @@ export default function ChatArea({
     }, 1);
   }, [chatContainerRef]);
 
+  const { triggerRefresh } = useSidebarRefresh();
+
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
-    if (messages.length == 2 && !isLoading) {
-      router.refresh();
-      console.log("refreshed");
+    if ((messages[messages.length - 1]?.annotations?.[1] as MessageAnnotation)?.sessionTitle && !titleUpdated) {
+      const sessionTitle = (messages[messages.length - 1]?.annotations?.[1] as MessageAnnotation)?.sessionTitle;
+      console.log("triggered sidebar refresh with title", sessionTitle);
+      triggerRefresh(sessionTitle);
+      setTitleUpdated(true);
+    } 
+
+    if (messages.length == 2 && status == "ready") {
+      // Trigger sidebar refresh instead of page navigation
+      triggerRefresh();
+      console.log("triggered sidebar refresh");
     }
 
     if (messages.length > 0 && userSubmitted) {
@@ -183,7 +196,7 @@ export default function ChatArea({
     }
 
     return () => clearTimeout(timeoutId);
-  }, [messages, isLoading, userSubmitted, scrolled]);
+  }, [messages, status, userSubmitted, scrolled]);
 
   return (
     <div className="flex w-full flex-col items-center justify-between">
@@ -223,7 +236,7 @@ export default function ChatArea({
                           key={`${m.id}_${index}`}
                           isLoading={
                             messageIndex == messages.length - 1
-                              ? isLoading
+                              ? status === "submitted" || status === "streaming"
                               : false
                           }
                           reasoning={p.reasoning}
@@ -235,7 +248,7 @@ export default function ChatArea({
                   })}
 
                   {/* LoadingAnimation */}
-                  {messageIndex == messages.length - 1 && isLoading && m.parts.length == 0 && (
+                  {messageIndex == messages.length - 1 && (status === "submitted" || status === "streaming") && m.parts.length == 0 && (
                     <PulseLoader color="hsl(var(--foreground))" size={5} />
                   )}
 
@@ -243,7 +256,7 @@ export default function ChatArea({
                   <div
                     className={`flex h-8 items-center gap-2 text-xs transition-all ${messageIndex == messages.length - 1 ? "opacity-50" : "opacity-0 hover:opacity-50"}`}
                   >
-                    {!isLoading && (
+                    {(status === "ready" || messageIndex != messages.length - 1) && (
                       <Button
                         variant="ghost"
                         size="icon"
@@ -270,7 +283,7 @@ export default function ChatArea({
               )}
             </div>
           ))}
-          <div className="flex_col item-end flex h-48 justify-end"></div>
+          <div className="h-48"></div>
         </div>
       )}
 
@@ -278,7 +291,7 @@ export default function ChatArea({
         handleSubmit={customHandleSubmit}
         input={input}
         handleInputChange={handleInputChange}
-        isLoading={isLoading}
+        status={status}
         stop={stop}
         model={model}
         setModel={setModel}

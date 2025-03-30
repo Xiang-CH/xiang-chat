@@ -225,7 +225,7 @@ function ChatInputSubmit({
 				)}
 				{...props}
 			>
-				{listening ? <AudioLinesIcon /> : <MicIcon />}
+				{listening ? <AudioLinesIcon /> : loading ? <StopIcon /> : <MicIcon />}
 			</Button>
 		);
 	}
