@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState } from "react"
 
 type SidebarRefreshContextType = {
   refreshTrigger: number
-  triggerRefresh: (newSessionTitle?: string | null | undefined) => void
+  triggerRefresh: (newSessionTitle?: string | null ) => void
   newSessionTitle: string | null | undefined
 }
 
@@ -14,7 +14,7 @@ export function SidebarRefreshProvider({ children }: { children: React.ReactNode
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const [newSessionTitle, setNewSessionTitle] = useState<string | null | undefined>(null)
 
-  const triggerRefresh = (newSessionTitle?: string | null | undefined) => {
+  const triggerRefresh = (newSessionTitle?: string | null ) => {
     setRefreshTrigger(prev => prev + 1)
     setNewSessionTitle(newSessionTitle)
   }
