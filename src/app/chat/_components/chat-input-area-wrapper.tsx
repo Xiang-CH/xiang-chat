@@ -40,7 +40,7 @@ export default function ChatInputAreaWrapper() {
             handleSubmit={customHandleSubmit}
             input={input}
             handleInputChange={(e) => setInput(e.target.value)}
-            isLoading={false}
+            status="ready"
             model={model}
             stop={() => {/* empty */}}
             setModel={setModel}
