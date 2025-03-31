@@ -1,7 +1,9 @@
+"use server";
 import { type Message } from "ai";
 import { db } from "~/server/db";
 import { messages } from "~/server/db/schema";
 import { eq } from "drizzle-orm";
+import { revalidateTag } from 'next/cache'
 
 export async function loadChat(sessionId: string): Promise<Message[]> {
   const db_messages = await db.query.messages.findMany({
@@ -54,6 +56,8 @@ export async function saveMessage(message: {
   }
 
   // Insert the new message if it doesn't exist
+  // console.log("db", message);
+  revalidateTag(message.sessionId);
   await db.insert(messages).values(message);
 }
 
@@ -67,6 +71,7 @@ export async function saveMessages( messageList: {
 }[]): Promise<void> {
   if (!messageList || messageList.length === 0) return;
 
-  console.log("db", messageList)
+  console.log("Tag to revalidate:", messageList[0]?.sessionId ?? "chat");
+  revalidateTag(messageList[0]?.sessionId ?? "chat");
   await db.insert(messages).values(messageList);
 }

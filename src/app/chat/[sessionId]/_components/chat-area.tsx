@@ -1,6 +1,6 @@
 "use client";
 import { type Message, useChat } from "@ai-sdk/react";
-import { loadChat } from "~/lib/actions";
+// import { loadChat } from "~/lib/message-store";
 import { ChatInputArea } from "~/components/chat-input-area";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { type Model, MODELS } from "~/lib/models";
@@ -22,14 +22,15 @@ type MessageAnnotation = {
 
 export default function ChatArea({
   sessionId,
+  historyMessages,
 }: {
   sessionId?: string | undefined;
+  historyMessages?: Message[];
 } = {}) {
   const router = useRouter();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [userSubmitted, setUserSubmitted] = useState(false);
-  // const [initialMessage, setInitialMessage] = useState<Message | null>(null);
-  const [model, setModel] = useState<Model | undefined>(undefined);
+  const [model, setModel] = useState<Model | undefined>((historyMessages?.[0]?.annotations?.[0] as MessageAnnotation)?.model ?? undefined);
   const [scrolled, setScrolled] = useState(false);
   const [titleUpdated, setTitleUpdated] = useState(false);
 
@@ -38,13 +39,14 @@ export default function ChatArea({
     handleInputChange,
     handleSubmit,
     messages,
-    setMessages,
+    // setMessages,
     status,
     stop,
     append,
   } = useChat({
     id: sessionId, // use the provided chat ID
     sendExtraMessageFields: true, // send id and createdAt for each message
+    initialMessages: historyMessages,
     generateId: () => {
       return generateUUID();
     },
@@ -87,6 +89,9 @@ export default function ChatArea({
       router.push("/chat");
       return;
     }
+    
+    scrollToBottom();
+    if (historyMessages) return
 
     const initialMessage = localStorage.getItem(`newMessage_${sessionId}`);
 
@@ -102,41 +107,41 @@ export default function ChatArea({
       return;
     } else {
 
-      try {
-        void (async () => {
-          const initialMessages = await loadChat(sessionId);
-          if (!initialMessages || initialMessages.length == 0) {
-            router.push("/chat");
-            return;
-          }
+      // try {
+      //   void (async () => {
+      //     const initialMessages = await loadChat(sessionId);
+      //     if (!initialMessages || initialMessages.length == 0) {
+      //       router.push("/chat");
+      //       return;
+      //     }
 
-          setModel(
-            (
-              initialMessages[initialMessages.length - 1]
-                ?.annotations as MessageAnnotation[]
-            )?.[0]?.model ?? MODELS[0],
-          );
+      //     setModel(
+      //       (
+      //         initialMessages[initialMessages.length - 1]
+      //           ?.annotations as MessageAnnotation[]
+      //       )?.[0]?.model ?? MODELS[0],
+      //     );
 
-          if (initialMessages[initialMessages.length - 1]?.role === "user") {
-            const lastMessage = initialMessages[initialMessages.length - 1];
-            setMessages(initialMessages.slice(0, -1));
-            if (lastMessage) {
-              await append(lastMessage);
-            }
-          } else {
-            console.log(initialMessages);
-            setMessages(initialMessages);
-          }
+      //     if (initialMessages[initialMessages.length - 1]?.role === "user") {
+      //       const lastMessage = initialMessages[initialMessages.length - 1];
+      //       setMessages(initialMessages.slice(0, -1));
+      //       if (lastMessage) {
+      //         await append(lastMessage);
+      //       }
+      //     } else {
+      //       console.log(initialMessages);
+      //       setMessages(initialMessages);
+      //     }
 
-          setTimeout(() => {
-            scrollToBottom();
-          }, 1);
-        })();
-      } catch (error) {
-        console.error(error);
-        router.push("/chat");
-        return;
-      }
+      //     setTimeout(() => {
+      //       scrollToBottom();
+      //     }, 0);
+      //   })();
+      // } catch (error) {
+      //   console.error(error);
+      //   router.push("/chat");
+      //   return;
+      // }
     }
   }, []);
 
@@ -148,12 +153,6 @@ export default function ChatArea({
         block: "end",
       });
     }
-
-    setTimeout(() => {
-      if (chatContainerRef.current) {
-        chatContainerRef.current.style.opacity = "1";
-      }
-    }, 1);
   }, [chatContainerRef]);
 
   const { triggerRefresh } = useSidebarRefresh();
@@ -204,7 +203,7 @@ export default function ChatArea({
         <Loading />
       ) : (
         <div
-          className="flex h-full w-full max-w-[50rem] flex-col gap-4 px-1 md:px-3 opacity-0 transition-opacity duration-100 ease-in-out"
+          className="flex h-full w-full max-w-[50rem] flex-col gap-4 px-1 md:px-3 transition-opacity duration-100 ease-in-out"
           ref={chatContainerRef}
         >
           <div className="h-8"></div>
