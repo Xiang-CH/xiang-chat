@@ -5,7 +5,7 @@ import { SignInButton, SignedIn, SignedOut, UserButton, useAuth } from "@clerk/n
 import { loadSessionsByUserId } from "~/lib/session-store";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Button } from "./ui/button";
-import { NewChatButton, ConversationGroup, NewSessionTab } from "./sidebar-buttons";
+import { NewChatButton, ConversationGroup } from "./sidebar-buttons";
 import {
   Sidebar,
   SidebarContent,

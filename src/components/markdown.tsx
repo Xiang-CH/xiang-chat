@@ -99,17 +99,22 @@ const components: Partial<Components> = {
   hr: ({ node, children,...props }) => {
     return <hr className="my-4" {...props} />;
   },
+  p: ({ node, children, ...props }) => {
+    return (
+      <p className="my-2" {...props}>
+        {children}
+      </p>
+    );
+  },
 };
 
 const remarkPlugins = [remarkGfm, remarkMath];
 
 const NonMemoizedMarkdown = ({ children, className }: { children: string; className?: string }) => {
   return (
-    <div>
-      <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={[rehypeKatex]} components={components} className={"font-normal leading-loose " + (className)}>
+    <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={[rehypeKatex]} components={components} className={"w-full max-w-full flex flex-col font-normal leading-loose " + (className)}>
         {children}
-      </ReactMarkdown>
-    </div>
+    </ReactMarkdown>
   );
 };
 

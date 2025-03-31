@@ -199,12 +199,12 @@ export default function ChatArea({
   }, [messages, status, userSubmitted, scrolled]);
 
   return (
-    <div className="flex w-full flex-col items-center justify-between">
+    <div className="flex w-full flex-col items-center justify-between relative">
       {messages.length == 0 ? (
         <Loading />
       ) : (
         <div
-          className="flex h-full w-full max-w-[50rem] flex-col gap-4 px-4 opacity-0 transition-opacity duration-100 ease-in-out"
+          className="flex h-full w-full max-w-[50rem] flex-col gap-4 px-1 md:px-3 opacity-0 transition-opacity duration-100 ease-in-out"
           ref={chatContainerRef}
         >
           <div className="h-8"></div>
@@ -219,12 +219,12 @@ export default function ChatArea({
             >
               {m.role === "user" ? (
                 <div className={"flex w-full justify-end"}>
-                  <div className="my-3 ml-6 w-fit rounded-xl bg-primary px-3 py-2 text-primary-foreground md:ml-14">
-                    <Markdown>{m.content}</Markdown>
+                  <div className="my-3 ml-6 w-fit rounded-xl bg-primary px-4 text-primary-foreground md:ml-14">
+                    <Markdown className="!leading-relaxed whitespace-pre-wrap">{m.content}</Markdown>
                   </div>
                 </div>
               ) : (
-                <div className="px-1 pl-2">
+                <div className="px-1 w-full">
                   {m.parts.map((p, index) => {
                     if (p.type === "text") {
                       return (
@@ -287,15 +287,15 @@ export default function ChatArea({
         </div>
       )}
 
-      <ChatInputArea
-        handleSubmit={customHandleSubmit}
-        input={input}
-        handleInputChange={handleInputChange}
-        status={status}
-        stop={stop}
-        model={model}
-        setModel={setModel}
-      />
+        <ChatInputArea
+          handleSubmit={customHandleSubmit}
+          input={input}
+          handleInputChange={handleInputChange}
+          status={status}
+          stop={stop}
+          model={model}
+          setModel={setModel}
+        />
     </div>
   );
 }
