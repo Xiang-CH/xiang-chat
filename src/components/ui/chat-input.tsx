@@ -108,14 +108,20 @@ function ChatInputTextArea({
 	const variant =
 		variantProp ?? (context.variant === "default" ? "unstyled" : "default");
 
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-		if (value.trim() && context.showDictation && context.setShowDictation) {
+	const handleChange: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+		// Hide dictation when text is entered (including paste)
+		if (e.target.value && context.showDictation && context.setShowDictation && !context.dictating) {
 			context.setShowDictation(false);
 		}
+		// Call the original onChange handler
+		onChangeProp?.(e) || context.onChange?.(e);
+	};
+
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 		if (!onSubmit) {
 			return;
 		}
-		if (e.key === "Enter" && !e.shiftKey) {
+		if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
 			if (typeof value !== "string" || value.trim().length === 0) {
 				return;
 			}
@@ -129,7 +135,7 @@ function ChatInputTextArea({
 			ref={textareaRef}
 			{...props}
 			value={value}
-			onChange={onChange}
+			onChange={handleChange}
 			onKeyDown={handleKeyDown}
 			placeholder={context.dictating ? "Listening..." : props.placeholder}
 			spellCheck={true}
