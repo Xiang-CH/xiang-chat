@@ -114,7 +114,7 @@ function ChatInputTextArea({
 			context.setShowDictation(false);
 		}
 		// Call the original onChange handler
-		onChangeProp?.(e) || context.onChange?.(e);
+		onChange?.(e);
 	};
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
