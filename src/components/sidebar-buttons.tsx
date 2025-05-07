@@ -92,6 +92,7 @@ export function SidebarTab({
             <div
               key={conversation.sessionId}
               onClick={handleClick}
+              title={sessionTitle ?? ""}
               className="w-full overflow-hidden text-ellipsis text-nowrap rounded-md px-1 py-1.5 text-[0.9rem] text-muted-foreground"
             >
               <span>{sessionTitle}</span>

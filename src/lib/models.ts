@@ -9,7 +9,7 @@ import { config } from "dotenv";
 
 config({ path: ".env" });
 
-export const MODELS = ["gemini-2.0-flash", "openrouter/deepseek-v3", "groq/qwen-qwq-32b", "groq/deepseek-r1-distill-qwen-32b", "openrouter/deepseek-r1-llama-70b", "glm-4-plus",  "qwen2.5-vl-72b", "gemini-2.5-pro", "glm-4-flash", "groq/llama-3.1-8b"] as const;
+export const MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "openrouter/deepseek-v3", "groq/qwen-qwq-32b", "groq/deepseek-r1-distill-qwen-32b", "openrouter/deepseek-r1-llama-70b",  "qwen2.5-vl-72b", "glm-4-plus", "gemini-2.5-pro", "glm-4-flash", "groq/llama-3.1-8b"] as const;
 export type Model = typeof MODELS[number];
 export const DEFAULT_MODEL = MODELS[0];
 
@@ -98,6 +98,13 @@ export const MODEL_DATA = {
         name: "Gemini 2.0 Flash",
         icon: "gemini",
         model: MODEL_PROVIDERS.google("gemini-2.0-flash"),
+        provider: "google",
+    },
+    "gemini-2.5-flash": {
+        id: "gemini-2.5-flash",
+        name: "Gemini 2.5 Flash",
+        icon: "gemini",
+        model: MODEL_PROVIDERS.google("gemini-2.5-flash-preview-04-17"),
         provider: "google",
     },
     "gemini-2.5-pro": {
