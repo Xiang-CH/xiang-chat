@@ -7,6 +7,8 @@ import { useTextareaResize } from "~/hooks/use-textarea-resize";
 import { ArrowUpIcon } from "lucide-react";
 import type React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
+import { MicIcon, AudioLinesIcon } from "lucide-react";
 
 interface ChatInputContextValue {
 	value?: string;
@@ -149,8 +151,6 @@ function ChatInputTextArea({
 		/>
 	);
 }
-import { MicIcon, AudioLinesIcon } from "lucide-react";
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 
 ChatInputTextArea.displayName = "ChatInputTextArea";
 
@@ -171,12 +171,17 @@ function ChatInputSubmit({
 	const loading = loadingProp ?? context.loading;
 	const onStop = onStopProp ?? context.onStop;
 	const onSubmit = onSubmitProp ?? context.onSubmit;
+	const [isClient, setIsClient] = useState(false);
 	const {
 		transcript,
 		finalTranscript,
 		listening,
 		browserSupportsSpeechRecognition,
-	  } = useSpeechRecognition();
+	} = useSpeechRecognition();
+
+	useEffect(() => {
+		setIsClient(true);
+	}, []);
 
 	useEffect(() => {
 		if (!context.setDictating) return;
@@ -190,11 +195,13 @@ function ChatInputSubmit({
 	}, [context.value]);
 
 	useEffect(() => {
-		context.onChange?.({ target: { value: transcript } } as React.ChangeEvent<HTMLTextAreaElement>);
-	}, [transcript]);
+		if (isClient) {
+			context.onChange?.({ target: { value: transcript } } as React.ChangeEvent<HTMLTextAreaElement>);
+		}
+	}, [transcript, isClient]);
 
 	useEffect(() => {
-		if (context.showDictation && finalTranscript) {
+		if (isClient && context.showDictation && finalTranscript) {
 			void SpeechRecognition.stopListening()
 				.then(() => {
 					context.setShowDictation?.(false);
@@ -203,8 +210,23 @@ function ChatInputSubmit({
 					console.error("Error stopping speech recognition:", error);
 				});
 		}
-	}, [finalTranscript]);
+	}, [finalTranscript, isClient]);
 
+	if (!isClient) {
+		return (
+			<Button
+				className={cn(
+					"shrink-0 rounded-full p-1.5 h-fit border dark:border-zinc-600",
+					className,
+				)}
+				disabled={true}
+				type="submit"
+				{...props}
+			>
+				<MicIcon />
+			</Button>
+		);
+	}
 
 	if (context.showDictation && browserSupportsSpeechRecognition) {
 		return (

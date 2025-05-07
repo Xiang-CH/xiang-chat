@@ -1,13 +1,14 @@
 "use client";
 import { ChatInputArea } from "~/components/chat-input-area";
 import { useState, useEffect } from "react";
-import { type Model, MODELS } from "~/lib/models";
+import { type Model, MODELS, type SearchMode } from "~/lib/models";
 import { generateUUID } from "~/lib/utils";
 import { type Message } from "@ai-sdk/react";
 import { useRouter } from "next/navigation";
 
 export default function ChatInputAreaWrapper() {
     const [model, setModel] = useState<Model | undefined>(MODELS[0]);
+    const [searchMode, setSearchMode] = useState<SearchMode>("off")
     const [input, setInput] = useState("");
     const router = useRouter();
 
@@ -44,6 +45,8 @@ export default function ChatInputAreaWrapper() {
             model={model}
             stop={() => {/* empty */}}
             setModel={setModel}
+            searchMode={searchMode}
+            setSearchMode={setSearchMode}
         />
     </div>
   );

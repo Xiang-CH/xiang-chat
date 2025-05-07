@@ -9,6 +9,7 @@ import {
   pgTableCreator,
   timestamp,
   varchar,
+  jsonb
 } from "drizzle-orm/pg-core";
 
 /**
@@ -47,6 +48,7 @@ export const messages = createTable(
     contentReasoning: text("content_reasoning"),
     role: varchar("role", { length: 256 }),
     model: varchar("model", { length: 256 }),
+    groundings: jsonb("groundings"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),

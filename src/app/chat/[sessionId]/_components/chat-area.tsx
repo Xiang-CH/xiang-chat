@@ -3,7 +3,7 @@ import { type Message, useChat } from "@ai-sdk/react";
 // import { loadChat } from "~/lib/message-store";
 import { ChatInputArea } from "~/components/chat-input-area";
 import { useEffect, useRef, useState, useCallback } from "react";
-import { type Model, MODELS } from "~/lib/models";
+import { type Model, MODELS, type SearchMode } from "~/lib/models";
 import { CopyIcon } from "@radix-ui/react-icons";
 import { useSidebarRefresh } from "~/context/sidebar-refresh-context";
 
@@ -14,10 +14,15 @@ import { generateUUID } from "~/lib/utils";
 import PulseLoader from "react-spinners/PulseLoader";
 import { toast } from "sonner";
 import { Button } from "../../../../components/ui/button";
+import { type GoogleGenerativeAIProviderMetadata } from '@ai-sdk/google';
+import { GroundingSourcesPanel } from '~/components/grounding-sources-panel';
 
 type MessageAnnotation = {
   model?: Model;
   sessionTitle?: string;
+  searchMode?: SearchMode;
+  groundings?: GoogleGenerativeAIProviderMetadata["groundingMetadata"],
+  messageId?: string;
 };
 
 export default function ChatArea({
@@ -31,8 +36,30 @@ export default function ChatArea({
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [userSubmitted, setUserSubmitted] = useState(false);
   const [model, setModel] = useState<Model | undefined>((historyMessages?.[0]?.annotations?.[0] as MessageAnnotation)?.model ?? undefined);
+  const [searchMode, setSearchMode] = useState<SearchMode>("off");
   const [scrolled, setScrolled] = useState(false);
   const [titleUpdated, setTitleUpdated] = useState(false);
+
+  const [isSourcesPanelOpen, setIsSourcesPanelOpen] = useState(false)
+  const [currentGroundingDataForPanel, setCurrentGroundingDataForPanel] = useState<GoogleGenerativeAIProviderMetadata["groundingMetadata"] | null>(null);
+
+  const [groundings, setGroundings] = useState<Record<string, GoogleGenerativeAIProviderMetadata["groundingMetadata"]>>(() => {
+    if (!historyMessages) return {};
+    return historyMessages.reduce((acc: Record<string, GoogleGenerativeAIProviderMetadata["groundingMetadata"]>, m: Message) => {
+      const annotation = m.annotations?.[0] as MessageAnnotation | undefined;
+      if (annotation?.groundings && m.id) {
+        acc[m.id] = annotation.groundings;
+      }
+      return acc; // Always return the accumulator
+    }, {} as Record<string, GoogleGenerativeAIProviderMetadata["groundingMetadata"]>); // Initial value with correct type
+  });
+
+  // useEffect(() => {
+  //   const savedSearchMode = localStorage.getItem("search_mode") as SearchMode;
+  //   if (savedSearchMode) {
+  //     setSearchMode(savedSearchMode);
+  //   }
+  // }, []);
 
   const {
     input,
@@ -55,23 +82,9 @@ export default function ChatArea({
         return toast.error(error.message);
       }
     },
-    experimental_prepareRequestBody: ({ messages, id }) => {
-      const lastMessage = messages[messages.length - 1];
-
-      if (!lastMessage) return [];
-
-      if (lastMessage.annotations) {
-        if (lastMessage.annotations.length == 0) {
-          lastMessage.annotations.push({ model: model ?? MODELS[0] });
-        }
-      } else {
-        lastMessage.annotations = [{ model: model ?? MODELS[0] }];
-      }
-
-      return { id: id, messages: messages } as {
-        id: string;
-        messages: Message[];
-      };
+    body: {
+      modelId: model ?? MODELS[0],
+      searchMode: searchMode,
     },
   });
 
@@ -105,43 +118,6 @@ export default function ChatArea({
         localStorage.removeItem(`newMessage_${sessionId}`);
       })();
       return;
-    } else {
-
-      // try {
-      //   void (async () => {
-      //     const initialMessages = await loadChat(sessionId);
-      //     if (!initialMessages || initialMessages.length == 0) {
-      //       router.push("/chat");
-      //       return;
-      //     }
-
-      //     setModel(
-      //       (
-      //         initialMessages[initialMessages.length - 1]
-      //           ?.annotations as MessageAnnotation[]
-      //       )?.[0]?.model ?? MODELS[0],
-      //     );
-
-      //     if (initialMessages[initialMessages.length - 1]?.role === "user") {
-      //       const lastMessage = initialMessages[initialMessages.length - 1];
-      //       setMessages(initialMessages.slice(0, -1));
-      //       if (lastMessage) {
-      //         await append(lastMessage);
-      //       }
-      //     } else {
-      //       console.log(initialMessages);
-      //       setMessages(initialMessages);
-      //     }
-
-      //     setTimeout(() => {
-      //       scrollToBottom();
-      //     }, 0);
-      //   })();
-      // } catch (error) {
-      //   console.error(error);
-      //   router.push("/chat");
-      //   return;
-      // }
     }
   }, []);
 
@@ -160,11 +136,27 @@ export default function ChatArea({
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
-    if ((messages[messages.length - 1]?.annotations?.[1] as MessageAnnotation)?.sessionTitle && !titleUpdated) {
-      const sessionTitle = (messages[messages.length - 1]?.annotations?.[1] as MessageAnnotation)?.sessionTitle;
+    const annotations = messages[messages.length - 1]?.annotations;
+    const last_annotation = annotations?.[annotations.length - 1] as MessageAnnotation;
+    const messageId = messages[messages.length - 1]?.id
+
+    if (last_annotation?.groundings && messageId) {
+      console.log(last_annotation);
+      setGroundings({...groundings, [messageId]: last_annotation.groundings});
+      console.log(groundings)
+    }
+
+    if (last_annotation?.sessionTitle && !titleUpdated) {
+      console.log(last_annotation);
+      const sessionTitle = last_annotation.sessionTitle;
       console.log("triggered sidebar refresh with title", sessionTitle);
       triggerRefresh(sessionTitle);
       setTitleUpdated(true);
+
+      // Remove "new" search param from URL
+      const url = new URL(window.location.href);
+      url.searchParams.delete("new");
+      window.history.replaceState({}, '', url);
     } 
 
     if (messages.length == 2 && status == "ready") {
@@ -250,6 +242,13 @@ export default function ChatArea({
                   {messageIndex == messages.length - 1 && (status === "submitted" || status === "streaming") && m.parts.length == 0 && (
                     <PulseLoader color="hsl(var(--foreground))" size={5} />
                   )}
+                  {/* Groundings */}
+                  {groundings[m.id]?.groundingChunks && (
+                    <Button variant="outline" className="rounded-3xl text-muted-foreground ml-2 my-1" onClick={() => {
+                      setCurrentGroundingDataForPanel(groundings[m.id] ?? null);
+                      setIsSourcesPanelOpen(true)
+                    }}>Source</Button>
+                  )}
 
                   {/* Generated by + Copy Button */}
                   <div
@@ -294,7 +293,16 @@ export default function ChatArea({
           stop={stop}
           model={model}
           setModel={setModel}
+          searchMode={searchMode}
+          setSearchMode={setSearchMode}
         />
+
+      <GroundingSourcesPanel
+        isOpen={isSourcesPanelOpen}
+        onClose={() => setIsSourcesPanelOpen(false)}
+        sources={currentGroundingDataForPanel?.groundingChunks}
+        googleSearchRender={currentGroundingDataForPanel?.searchEntryPoint?.renderedContent}
+      />
     </div>
   );
 }

@@ -5,7 +5,8 @@ import {
   ChatInputTextArea,
 } from "~/components/ui/chat-input";
 import { ModelSelector } from "~/components/ui/model-selector";
-import { type Model } from "~/lib/models";
+import { SearchModeToggle } from "~/components/ui/search-mode-toggle";
+import { type Model, type SearchMode, MODEL_DATA } from "~/lib/models";
 import React from "react";
 import { useAuth } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
@@ -19,6 +20,8 @@ function ChatInputArea({
   stop,
   model,
   setModel,
+  searchMode,
+  setSearchMode,
 }: {
   className?: string;
   handleSubmit: () => void;
@@ -32,11 +35,12 @@ function ChatInputArea({
   stop: () => void;
   model: Model | undefined;
   setModel: (model: Model) => void;
+  searchMode: SearchMode;
+  setSearchMode: (mode: SearchMode) => void
 }) {
   const { isSignedIn } = useAuth();
   const [isStandalone, setIsStandalone] = useState(false);
 
-  
   useEffect(() => {
     // Check if the app is running in standalone mode (installed PWA)
     const isInStandaloneMode = (): boolean => {
@@ -65,6 +69,8 @@ function ChatInputArea({
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
+  const showSearchToggle = model && MODEL_DATA[model].isSearch;
+
   return (
     <div className="fixed left-0 md:left-auto bottom-0 flex w-full max-w-[50rem] justify-center rounded-t-2xl bg-muted md:bg-background">
       <div
@@ -85,15 +91,29 @@ function ChatInputArea({
               disabled={!isSignedIn}
             />
             <div className="flex w-full items-end justify-between">
-              <div className="flex items-center gap-2">
-                <ModelSelector
-                  value={model}
-                  onChange={(value) => {
-                    localStorage.setItem("last_used_model", value)
-                    setModel(value)
-                  }}
-                  disabled={!isSignedIn}
-                />
+              <div className="flex items-center gap-2 justify-start">
+                <div tabIndex={-1}>
+                  <ModelSelector
+                    value={model}
+                    onChange={(value) => {
+                      localStorage.setItem("last_used_model", value)
+                      setModel(value)
+                    }}
+                    disabled={!isSignedIn}
+                  />
+                </div>
+                {showSearchToggle && (
+                  <div tabIndex={-1}>
+                    <SearchModeToggle
+                      value={searchMode}
+                      onChange={(value) => {
+                        localStorage.setItem("search_mode", value);
+                        setSearchMode(value);
+                      }}
+                      disabled={!isSignedIn}
+                    />
+                  </div>
+                )}
               </div>
               <ChatInputSubmit/>
             </div>

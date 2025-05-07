@@ -13,6 +13,9 @@ export const MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "openrouter/deeps
 export type Model = typeof MODELS[number];
 export const DEFAULT_MODEL = MODELS[0];
 
+export type SearchMode = "on" | "off";
+// export type SearchMode = "on" | "off" | "auto";
+
 export const MODEL_ICONS = ["deepseek", "zhipu", "openai", "groq", "qwen", "gemini", "meta"] as const;
 export type ModelIcon = typeof MODEL_ICONS[number];
 
@@ -55,6 +58,7 @@ export const MODEL_DATA = {
                 tagName: "think"
             }),
           }),
+        modelIdByProvider: "qwen-qwq-32b",
         provider: "groq",
         isReasoning: true,
     },
@@ -65,6 +69,7 @@ export const MODEL_DATA = {
         model: MODEL_PROVIDERS.openrouter("deepseek/deepseek-chat-v3-0324:free"),
         provider: "openrouter",
         isReasoning: false,
+        modelIdByProvider: "deepseek/deepseek-chat-v3-0324:free",
     },
     "glm-4-plus": {
         id: "glm-4-plus",
@@ -72,6 +77,7 @@ export const MODEL_DATA = {
         icon: "zhipu",
         model: MODEL_PROVIDERS.zhipu("glm-4-plus"),
         provider: "zhipu",
+        modelIdByProvider: "glm-4-plus",
     },
     "groq/deepseek-r1-distill-qwen-32b": {
         id: "groq/deepseek-r1-distill-qwen-32b",
@@ -85,6 +91,7 @@ export const MODEL_DATA = {
           }),
         provider: "groq",
         isReasoning: true,
+        modelIdByProvider: "deepseek-r1-distill-qwen-32b",
     },
     "groq/llama-3.1-8b": {
         id: "groq/llama-3.1-8b",
@@ -92,6 +99,7 @@ export const MODEL_DATA = {
         icon: "meta",
         model: MODEL_PROVIDERS.groq("llama-3.1-8b-instant"),
         provider: "groq",
+        modelIdByProvider: "llama-3.1-8b-instant",
     },
     "gemini-2.0-flash": {
         id: "gemini-2.0-flash",
@@ -99,6 +107,8 @@ export const MODEL_DATA = {
         icon: "gemini",
         model: MODEL_PROVIDERS.google("gemini-2.0-flash"),
         provider: "google",
+        isSearch: true,
+        modelIdByProvider: "gemini-2.0-flash",
     },
     "gemini-2.5-flash": {
         id: "gemini-2.5-flash",
@@ -106,6 +116,8 @@ export const MODEL_DATA = {
         icon: "gemini",
         model: MODEL_PROVIDERS.google("gemini-2.5-flash-preview-04-17"),
         provider: "google",
+        isSearch: true,
+        modelIdByProvider: "gemini-2.5-flash-preview-04-17",
     },
     "gemini-2.5-pro": {
         id: "gemini-2.5-pro",
@@ -114,6 +126,8 @@ export const MODEL_DATA = {
         model: MODEL_PROVIDERS.google("gemini-2.5-pro-exp-03-25"),
         provider: "google",
         isReasoning: true,
+        isSearch: true,
+        modelIdByProvider: "gemini-2.5-pro-exp-03-25",
     },
     "openrouter/deepseek-r1-llama-70b": {
         id: "openrouter/deepseek-r1-llama-70b",
@@ -123,6 +137,7 @@ export const MODEL_DATA = {
         provider: "openrouter",
         isReasoning: true,
         // disabled: true,
+        modelIdByProvider: "deepseek/deepseek-r1-distill-llama-70b:free",
     },
     "glm-4-flash": {
         id: "glm-4-flash",
@@ -130,6 +145,7 @@ export const MODEL_DATA = {
         icon: "zhipu",
         model: MODEL_PROVIDERS.zhipu("glm-4-flash"),
         provider: "zhipu",
+        modelIdByProvider: "glm-4-flash",
     },
     "qwen2.5-vl-72b": {
         id: "qwen2.5-vl-72b",
@@ -138,5 +154,6 @@ export const MODEL_DATA = {
         model: MODEL_PROVIDERS.openrouter("qwen/qwen2.5-vl-72b-instruct:free"),
         provider: "openrouter",
         isVision: true,
+        modelIdByProvider: "qwen/qwen2.5-vl-72b-instruct:free",
     }
- } as Record<Model, {id: Model, name: string, icon: ModelIcon, model: LanguageModelV1, provider: ProviderName, disabled?: boolean, isReasoning?: boolean, isVision?:boolean}>;
+ } as Record<Model, {id: Model, name: string, icon: ModelIcon, model: LanguageModelV1, provider: ProviderName, disabled?: boolean, isReasoning?: boolean, isVision?:boolean, isSearch?: boolean, modelIdByProvider: string}>;

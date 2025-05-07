@@ -4,6 +4,7 @@ import { db } from "~/server/db";
 import { messages } from "~/server/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidateTag } from 'next/cache'
+import { type GoogleGenerativeAIProviderMetadata } from "@ai-sdk/google";
 
 export async function loadChat(sessionId: string): Promise<Message[]> {
   const db_messages = await db.query.messages.findMany({
@@ -22,7 +23,7 @@ export async function loadChat(sessionId: string): Promise<Message[]> {
       : [{ type: "text", text: message.content ?? "" }],
     role: message.role as "system" | "user" | "assistant" | "data",
     createdAt: message.createdAt,
-    annotations: [{ model: message.model, sessionId: message.sessionId }],
+    annotations: [{ model: message.model, sessionId: message.sessionId, groundings: (message.groundings as GoogleGenerativeAIProviderMetadata["groundingMetadata"])}],
   }));
 }
 
@@ -38,6 +39,7 @@ export async function saveMessage(message: {
   content: string;
   contentReasoning: string | null | undefined;
   role: "system" | "user" | "assistant" | "data";
+  grounding?: GoogleGenerativeAIProviderMetadata["groundingMetadata"];
   model: string;
 }): Promise<void> {
   // Check if the messageId already exists in the database
@@ -67,6 +69,7 @@ export async function saveMessages( messageList: {
   content: string;
   contentReasoning: string | null | undefined;
   role: "system" | "user" | "assistant" | "data";
+  grounding?: GoogleGenerativeAIProviderMetadata["groundingMetadata"];
   model: string;
 }[]): Promise<void> {
   if (!messageList || messageList.length === 0) return;
