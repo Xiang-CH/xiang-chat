@@ -9,7 +9,7 @@ import { config } from "dotenv";
 
 config({ path: ".env" });
 
-export const MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "openrouter/deepseek-v3", "groq/qwen-qwq-32b", "groq/deepseek-r1-distill-qwen-32b", "openrouter/deepseek-r1-llama-70b",  "qwen2.5-vl-72b", "glm-4-plus", "gemini-2.5-pro", "glm-4-flash", "groq/llama-3.1-8b"] as const;
+export const MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "openrouter/deepseek-v3", "groq/qwen-qwq-32b", "openrouter/deepseek-r1-llama-70b",  "qwen2.5-vl-72b", "glm-4-plus", "gemini-2.5-pro", "glm-4-flash", "groq/llama-3.1-8b"] as const;
 export type Model = typeof MODELS[number];
 export const DEFAULT_MODEL = MODELS[0];
 
@@ -78,20 +78,6 @@ export const MODEL_DATA = {
         model: MODEL_PROVIDERS.zhipu("glm-4-plus"),
         provider: "zhipu",
         modelIdByProvider: "glm-4-plus",
-    },
-    "groq/deepseek-r1-distill-qwen-32b": {
-        id: "groq/deepseek-r1-distill-qwen-32b",
-        name: "Deepseek R1 distill Qwen",
-        icon: "deepseek",
-        model: wrapLanguageModel({
-            model: MODEL_PROVIDERS.groq("deepseek-r1-distill-qwen-32b"),
-            middleware: extractReasoningMiddleware({
-                tagName: "think"
-            }),
-          }),
-        provider: "groq",
-        isReasoning: true,
-        modelIdByProvider: "deepseek-r1-distill-qwen-32b",
     },
     "groq/llama-3.1-8b": {
         id: "groq/llama-3.1-8b",

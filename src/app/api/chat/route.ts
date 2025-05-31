@@ -28,7 +28,7 @@ export const maxDuration = 60;
 function generateSessionTitle(messages: Message[]) {
   const systemMessage = {
     role: "system",
-    content: "You are a title generator for a chat session, your goal is to extract the key point of the conversation. Be as concise as possible without losing the context of the conversation. The title should be in the same language as the conversation, output the title directly and nothing else including punctuation. Summarize the conversation below in 7 words or fewer:",
+    content: "You are a title generator for a chat session, your goal is to extract the key point of the conversation. Be as concise as possible without losing the context of the conversation. The title should be in the same language as the conversation, **output the title directly and nothing else**. Summarize the conversation below in 7 words or fewer.",
   } as Message;
   return generateText({
     model: MODEL_DATA["groq/llama-3.1-8b"].model,

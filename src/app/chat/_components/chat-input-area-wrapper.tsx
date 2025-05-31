@@ -32,7 +32,7 @@ export default function ChatInputAreaWrapper() {
             annotations: [{ model: model }],
         } as Message;
         localStorage.setItem(`newMessage_${sessionId}`, JSON.stringify(tempMsg));
-        router.push(`/chat/${sessionId}?new=t`, { scroll: false,  });
+        router.push(`/chat/${sessionId}?new=t`, { scroll: false });
     }
 
   return (
