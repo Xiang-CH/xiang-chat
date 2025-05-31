@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { SidebarGroup, SidebarMenuButton, useSidebar } from "./ui/sidebar";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
@@ -23,6 +23,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { useSidebarRefresh } from "~/context/sidebar-refresh-context";
+import Link from "next/link";
 
 export function SidebarTab({
   conversation,
@@ -43,11 +44,9 @@ export function SidebarTab({
   );
   const { triggerRefresh } = useSidebarRefresh();
 
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleClick = () => {
     setActiveSessionId(conversation.sessionId);
     setOpenMobile(false);
-    router.push(`/chat/${conversation.sessionId}`);
   };
 
   useEffect(() => {
@@ -89,14 +88,15 @@ export function SidebarTab({
           </>
         ) : (
           <>
-            <div
+            <Link
               key={conversation.sessionId}
+              href={`/chat/${conversation.sessionId}`}
               onClick={handleClick}
               title={sessionTitle ?? ""}
               className="w-full overflow-hidden text-ellipsis text-nowrap rounded-md px-1 py-1.5 text-[0.9rem] text-muted-foreground"
             >
               <span>{sessionTitle}</span>
-            </div>
+            </Link>
             <DropdownMenu>
               <DropdownMenuTrigger
                 className="absolute flex h-6 w-6 items-center justify-center rounded-lg bg-muted hover:bg-muted-foreground [.session-tab:hover_&]:translate-x-0 [.session-tab:hover_&]:opacity-100 data-[state=open]:translate-x-0 data-[state=open]:opacity-100 text-muted-foreground hover:text-muted top-1 transition-all focus:outline-none right-0 translate-x-8 opacity-0"
@@ -155,20 +155,16 @@ export function SidebarTab({
 
 export function NewChatButton({setActiveSessionId} :{setActiveSessionId: (id: string | null) => void}) {
   const { setOpenMobile } = useSidebar();
-  const router = useRouter();
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setOpenMobile(false);
-    setActiveSessionId(null);
-    router.push(`/chat`);
-  };
 
   return (
-    <div className="w-full">
-      <Button variant="outline" className="w-full shadow-none" onClick={handleClick}>
+    <Link className="w-full" href="/chat" onNavigate={() => {
+      setOpenMobile(false);
+      setActiveSessionId(null);
+    }}>
+      <Button variant="outline" className="w-full shadow-none">
         New Chat
       </Button>
-    </div>
+    </Link>
   );
 }
 
@@ -239,7 +235,7 @@ export function ConversationGroup({
   const [isDeleteAllDialogOpen, setIsDeleteAllDialogOpen] = useState(false);
   const { triggerRefresh } = useSidebarRefresh();
   
-  if (conversations.length === 0 && (!isFirst || !activeSessionId)) return null;
+  if (conversations.length === 0 && (!isFirst || !activeSessionId || !newSessionTitle)) return null;
   
   const currentSessionId = currentPath.split("/")[2];
   const isActiveIncluded = conversations.some(conv => conv.sessionId === currentSessionId);
@@ -248,6 +244,7 @@ export function ConversationGroup({
     <SidebarGroup className={`${isFirst ? 'mt-1' : 'mt-4'} flex max-w-[18rem] flex-col gap-[2px] px-4 md:max-w-[16rem]`}>
       <div className="flex justify-start items-center px-1 h-5 gap-1">
         <div className="text-xs font-semibold text-muted-foreground">{title}</div>
+        
         {conversations.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger className="opacity-0 transition-opacity hover:opacity-100 h-4 w-4 flex items-center justify-center rounded-full hover:bg-muted-foreground text-muted-foreground hover:text-muted focus:outline-none data-[state=open]:opacity-100 data-[state=open]:bg-muted-foreground data-[state=open]:text-muted">

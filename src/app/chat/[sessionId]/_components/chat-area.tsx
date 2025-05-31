@@ -34,6 +34,7 @@ export default function ChatArea({
 } = {}) {
   const router = useRouter();
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const endRef = useRef<HTMLDivElement>(null);
   const [userSubmitted, setUserSubmitted] = useState(false);
   const [model, setModel] = useState<Model | undefined>((historyMessages?.[0]?.annotations?.[0] as MessageAnnotation)?.model ?? undefined);
   const [searchMode, setSearchMode] = useState<SearchMode>("off");
@@ -123,13 +124,13 @@ export default function ChatArea({
 
   // Auto scroll to bottom only if the user hasn't scrolled away
   const scrollToBottom = useCallback(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollIntoView({
+    if (endRef.current) {
+      endRef.current.scrollIntoView({
         behavior: "instant",
         block: "end",
       });
     }
-  }, [chatContainerRef]);
+  }, [endRef]);
 
   const { triggerRefresh } = useSidebarRefresh();
 
@@ -190,7 +191,7 @@ export default function ChatArea({
   }, [messages, status, userSubmitted, scrolled]);
 
   return (
-    <div className="flex w-full flex-col items-center justify-between relative">
+    <div className="flex w-full flex-col items-center justify-between relative min-h-full" ref={endRef}>
       {messages.length == 0 ? (
         <Loading />
       ) : (
@@ -281,10 +282,18 @@ export default function ChatArea({
               )}
             </div>
           ))}
-          <div className="h-48"></div>
+          <div className="h-32"></div>
         </div>
       )}
 
+      <GroundingSourcesPanel
+        isOpen={isSourcesPanelOpen}
+        onClose={() => setIsSourcesPanelOpen(false)}
+        sources={currentGroundingDataForPanel?.groundingChunks}
+        googleSearchRender={currentGroundingDataForPanel?.searchEntryPoint?.renderedContent}
+      />
+
+      <div className="sticky bottom-0 w-full flex justify-center">
         <ChatInputArea
           handleSubmit={customHandleSubmit}
           input={input}
@@ -296,13 +305,7 @@ export default function ChatArea({
           searchMode={searchMode}
           setSearchMode={setSearchMode}
         />
-
-      <GroundingSourcesPanel
-        isOpen={isSourcesPanelOpen}
-        onClose={() => setIsSourcesPanelOpen(false)}
-        sources={currentGroundingDataForPanel?.groundingChunks}
-        googleSearchRender={currentGroundingDataForPanel?.searchEntryPoint?.renderedContent}
-      />
+      </div>
     </div>
   );
 }

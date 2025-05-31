@@ -36,7 +36,7 @@ export default function ChatInputAreaWrapper() {
     }
 
   return (
-    <div className="w-full flex justify-center">
+    <div className="w-full flex bottom-0 justify-center max-w-full left-0">
         <ChatInputArea 
             handleSubmit={customHandleSubmit}
             input={input}

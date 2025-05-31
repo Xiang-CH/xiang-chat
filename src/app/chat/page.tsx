@@ -6,7 +6,7 @@ export const revalidate = 360;
 
 export default async function chatPage() {
   return (
-    <div className="min-h-[100dvh] w-full flex flex-col">
+    <div className="min-h-[100dvh] w-full flex flex-col relative">
         <EmptySession/>
         <ChatInputAreaWrapper/>
     </div>

@@ -31,8 +31,8 @@ export function SearchModeToggle({
       disabled={disabled}
       title={`Search mode: ${value}`}
     >
-      <SearchIcon className="w-4 text-muted-foreground pb-0.5" style={{ opacity: value === "off" ? 0.3 : 1 }} />
-      <span className="font-normal text-xs pt-[1px] text-muted-foreground">Search</span>
+      <SearchIcon className="w-4 text-muted-foreground" style={{ opacity: value === "off" ? 0.3 : 1 }} />
+      <span className="font-normal text-xs text-muted-foreground" style={{ opacity: value === "off" ? 0.5 : 1 }}>Search</span>
     </Button>
   );
 } 
