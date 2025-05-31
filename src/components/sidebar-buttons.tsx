@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { SidebarGroup, SidebarMenuButton, useSidebar } from "./ui/sidebar";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
